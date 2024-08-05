@@ -84,6 +84,7 @@ func ConvertToBlockHeader(id tongo.BlockIDExt, block *tlb.Block) (*BlockHeader, 
 		header.MasterRef = &tongo.BlockIDExt{
 			BlockID: tongo.BlockID{
 				Workchain: -1,
+				Shard:     0x8000000000000000,
 				Seqno:     info.MasterRef.Master.SeqNo,
 			},
 			RootHash: tongo.Bits256(info.MasterRef.Master.RootHash),
@@ -441,6 +442,7 @@ func ConvertToAccount(accountId tongo.AccountID, shardAccount tlb.ShardAccount) 
 	}
 	res.LastTransactionLt = shardAccount.LastTransLt
 	res.LastTransactionHash = tongo.Bits256(shardAccount.LastTransHash)
+	res.LastActivityTime = int64(acc.Account.StorageStat.LastPaid)
 	if acc.Account.Storage.State.SumType == "AccountUninit" {
 		res.Status = tlb.AccountUninit
 		return res, nil
