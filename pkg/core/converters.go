@@ -15,6 +15,10 @@ import (
 	"github.com/tonkeeper/opentonapi/internal/g"
 )
 
+var (
+	extInMsgDecoderInterfaces = []abi.ContractInterface{abi.WalletHighloadV3R1, abi.WalletV3R1, abi.WalletV3R2, abi.WalletV4R1, abi.WalletV4R2, abi.WalletV5R1}
+)
+
 func ConvertToBlockHeader(id tongo.BlockIDExt, block *tlb.Block) (*BlockHeader, error) {
 	info := block.Info
 	inMsgLen, err := block.Extra.InMsgDescrLength()
@@ -334,7 +338,7 @@ func ConvertMessage(message tlb.Message, txLT uint64) (Message, error) {
 	case "ExtInMsgInfo":
 		var decodedBody *DecodedMessageBody
 		info := message.Info.ExtInMsgInfo
-		tag, op, value, err := abi.ExtInMessageDecoder(&cell, nil)
+		tag, op, value, err := abi.ExtInMessageDecoder(&cell, extInMsgDecoderInterfaces)
 		if err == nil && op != nil {
 			decodedBody = &DecodedMessageBody{
 				Operation: *op,
