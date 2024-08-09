@@ -398,20 +398,20 @@ func ConvertMessage(message tlb.Message, txLT uint64) (Message, error) {
 
 func convertBodyCell(a tlb.Any) ([]byte, error) {
 	c := boc.Cell(a)
-	if c.BitsAvailableForRead() == 0 {
-		return []byte{}, nil
-	}
-	if c.BitsAvailableForRead() >= 32 {
-		v, _ := c.PickUint(32)
-		if v == 0 && c.BitsAvailableForRead()%8 == 0 && c.RefsSize() == 0 { // Text payload
-			bs := c.ReadRemainingBits()
-			b, err := bs.GetTopUppedArray()
-			if err != nil {
-				return nil, err
-			}
-			return b, nil
-		}
-	}
+	//if c.BitsAvailableForRead() == 0 {
+	//	return []byte{}, nil
+	//}
+	//if c.BitsAvailableForRead() >= 32 {
+	//	v, _ := c.PickUint(32)
+	//	if v == 0 && c.BitsAvailableForRead()%8 == 0 && c.RefsSize() == 0 { // Text payload
+	//		bs := c.ReadRemainingBits()
+	//		b, err := bs.GetTopUppedArray()
+	//		if err != nil {
+	//			return nil, err
+	//		}
+	//		return b, nil
+	//	}
+	//}
 	return c.ToBoc()
 }
 
