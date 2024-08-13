@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	extInMsgDecoderInterfaces = []abi.ContractInterface{abi.WalletHighloadV3R1, abi.WalletV3R1, abi.WalletV3R2, abi.WalletV4R1, abi.WalletV4R2, abi.WalletV5R1}
+	extInMsgDecoderInterfaces = []abi.ContractInterface{abi.WalletV5R1, abi.WalletV4R2, abi.WalletV4R1, abi.WalletV3R2, abi.WalletV3R1, abi.WalletHighloadV3R1}
 )
 
 func ConvertToBlockHeader(id tongo.BlockIDExt, block *tlb.Block) (*BlockHeader, error) {

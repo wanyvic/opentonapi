@@ -5,6 +5,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/tonkeeper/opentonapi/internal/g"
+	"github.com/tonkeeper/tongo/abi"
+	"github.com/tonkeeper/tongo/boc"
 	"math/big"
 	"os"
 	"testing"
@@ -118,6 +121,50 @@ func TestConvertTransaction(t *testing.T) {
 			if bytes.Compare(bs, expected) != 0 {
 				t.Fatalf("dont match")
 			}
+		})
+	}
+}
+
+func TestConvertMessage(t *testing.T) {
+	tests := []struct {
+		name    string
+		msgHash tongo.Bits256
+		rawBody string
+		wantOp  *abi.MsgOpCode
+	}{
+		{
+			name:    "WalletSignedV4",
+			msgHash: tongo.MustParseHash("fcd573be1b5b9212fbf296958c2ee7913c64175169b1ba58679ae69f60d69399"),
+			rawBody: "b5ee9c720101020100a100019c2f4f2a62f97346c45e5232d66c8d525deaed365ab53f0c52753a370b0224f5f1e022c77b3d4ccfbdd0b007aedc5dc493e7ac98283cc6b47ca01c977a92764c0729a9a31766b30c8d00000073000301009c620008b38c316ada97ff0e0c2d8d3fc27aacb654403401255e94a57f97b56be136909138800000000000000000000000000000000000363662333063343864653535393336633533303532333134",
+		},
+		{
+			name:    "WalletSignedExternalV5R1",
+			msgHash: tongo.MustParseHash("66ea3850b7f188559ca6e657035183b3d5f402e3d0fc8e6cd478e7d10cc797d9"),
+			rawBody: "b5ee9c720101040100950001a17369676e7fffff11ffffffff00000000a151e8192f8651c72c4825350f18e31510044897899b761dc2e9606283f358e58b742d7c8e6baf4ca68d0e2d5ad7f62d80688f166ec0c720a5ac59efa1041143a001020a0ec3c86d0302030000006862005304a75fe829b8489154323ea3f1577055dcce862eb7aa8cbec7e892909fc6a3a02faf080000000000000000000000000000",
+			wantOp:  g.Pointer(uint32(0x7369676e)),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			roots, err := boc.DeserializeBocHex(tt.rawBody)
+			require.Nil(t, err)
+			if len(roots) != 1 {
+				t.Fatalf("invaild raw body")
+			}
+			root := roots[0]
+
+			var decodedBody *DecodedMessageBody
+			tag, op, value, err := abi.ExtInMessageDecoder(root, extInMsgDecoderInterfaces)
+			if err != nil || op == nil {
+				t.Fatalf("decode message failed: %v", err)
+			}
+			decodedBody = &DecodedMessageBody{
+				Operation: *op,
+				Value:     value,
+			}
+
+			require.Equal(t, tt.wantOp, tag)
+			require.Equal(t, tt.name, decodedBody.Operation)
 		})
 	}
 }
