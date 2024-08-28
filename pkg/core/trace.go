@@ -80,7 +80,7 @@ func (t *Trace) inProgress() bool {
 	}
 
 	for _, msg := range t.OutMsgs {
-		if _, ok := childrenMsgs[msg.Hash]; !ok {
+		if _, ok := childrenMsgs[msg.Hash]; msg.Destination != nil && !ok {
 			return true
 		}
 	}
