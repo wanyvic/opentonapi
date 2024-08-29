@@ -103,7 +103,9 @@ func fromTrace(trace *core.Trace) *Bubble {
 		Transaction: []ton.Bits256{trace.Hash},
 	}
 	for _, outMsg := range trace.OutMsgs {
-		b.ValueFlow.AddTons(trace.Account, -outMsg.Value)
+		if outMsg.Destination == nil {
+			b.ValueFlow.AddTons(trace.Account, -outMsg.Value)
+		}
 	}
 	sort.Slice(trace.Children, func(i, j int) bool {
 		if trace.Children[i].InMsg == nil || trace.Children[j].InMsg == nil {
