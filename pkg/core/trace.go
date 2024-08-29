@@ -130,19 +130,24 @@ func (t *TraceAdditionalInfo) UnmarshalJSON(data []byte) error {
 }
 
 func (t *Trace) InProgress() bool {
-	return t.countUncompleted() != 0
+	return t.inProgress()
 }
-func (t *Trace) countUncompleted() int {
-	c := 0
-	for i := range t.OutMsgs {
-		if t.OutMsgs[i].Destination != nil {
-			c++
+
+func (t *Trace) inProgress() bool {
+	childrenMsgs := make(map[ton.Bits256]bool)
+	for _, child := range t.Children {
+		if child.inProgress() {
+			return true
+		}
+		childrenMsgs[child.InMsg.Hash] = true
+	}
+
+	for _, msg := range t.OutMsgs {
+		if _, ok := childrenMsgs[msg.Hash]; msg.Destination != nil && !ok {
+			return true
 		}
 	}
-	for _, st := range t.Children {
-		c += st.countUncompleted()
-	}
-	return c
+	return false
 }
 
 func (t *Trace) CalculateProgress() float32 {
@@ -156,7 +161,7 @@ func (t *Trace) CalculateProgress() float32 {
 		if !t.Emulated {
 			finished += 1
 			for _, m := range t.OutMsgs {
-				if m.Destination != nil && slices.ContainsFunc(t.Children, func(child *Trace) bool {
+				if m.Destination != nil && !slices.ContainsFunc(t.Children, func(child *Trace) bool {
 					return child.InMsg.Hash == m.Hash
 				}) {
 					all += 1
