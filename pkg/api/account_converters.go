@@ -179,7 +179,7 @@ func convertToWallet(
 }
 
 func checkIsWallet(account *core.Account) bool {
-	if account.Status == tlb.AccountUninit || account.Status == tlb.AccountNone {
+	if account.Status == tlb.AccountUninit || (account.Status == tlb.AccountNone && account.LastTransactionLt > 0) {
 		return true
 	}
 	for _, i := range account.Interfaces {
