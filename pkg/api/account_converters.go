@@ -110,7 +110,7 @@ func convertToAccount(account *core.Account, ab *addressbook.KnownAddress, state
 	if state.CheckIsSuspended(account.AccountAddress) {
 		acc.IsSuspended.SetTo(true)
 	}
-	if account.Status == tlb.AccountUninit || account.Status == tlb.AccountNone {
+	if account.Status == tlb.AccountUninit || (account.Status == tlb.AccountNone && account.LastTransactionLt > 0) {
 		acc.IsWallet = true
 	} else {
 		for _, i := range account.Interfaces {
