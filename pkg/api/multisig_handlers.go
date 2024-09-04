@@ -44,7 +44,7 @@ func (h *Handler) GetMultisigAccount(ctx context.Context, params oas.GetMultisig
 	if err != nil {
 		return nil, toError(http.StatusInternalServerError, err)
 	}
-	converted, err := h.convertMultisig(ctx, *multisig)
+	converted, err := h.convertMultisig(ctx, *multisig, h.addressBook)
 	if err != nil {
 		return nil, toError(http.StatusInternalServerError, err)
 	}

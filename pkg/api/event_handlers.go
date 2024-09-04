@@ -160,7 +160,15 @@ func (h *Handler) GetTrace(ctx context.Context, params oas.GetTraceParams) (*oas
 	if err != nil {
 		return nil, toError(http.StatusInternalServerError, err)
 	}
-	convertedTrace := convertTrace(trace, h.addressBook)
+
+	var book addressBook
+	if trace.Wallets != nil {
+		book = core.NewSimpleAddressBook(trace.Wallets, h.addressBook)
+	} else {
+		book = h.addressBook
+	}
+
+	convertedTrace := convertTrace(trace, book)
 	if emulated {
 		convertedTrace.Emulated.SetTo(true)
 	}
@@ -614,7 +622,7 @@ func (h *Handler) EmulateMessageToWallet(ctx context.Context, request *oas.Emula
 	if err != nil {
 		return nil, toError(http.StatusInternalServerError, err)
 	}
-	oasRisk, err := h.convertRisk(ctx, *risk, *walletAddress)
+	oasRisk, err := h.convertRisk(ctx, *risk, *walletAddress, h.addressBook)
 	if err != nil {
 		return nil, toError(http.StatusInternalServerError, err)
 	}

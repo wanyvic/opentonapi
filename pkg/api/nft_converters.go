@@ -141,13 +141,19 @@ func (h *Handler) convertNftHistory(ctx context.Context, account tongo.AccountID
 			}
 			return nil, 0, err
 		}
+		var book addressBook
+		if trace.Wallets != nil {
+			book = core.NewSimpleAddressBook(trace.Wallets, h.addressBook)
+		} else {
+			book = h.addressBook
+		}
 		actions, err := bath.FindActions(ctx, trace, bath.WithInformationSource(h.storage), bath.WithStraws(bath.NFTStraws))
 		if err != nil {
 			return nil, 0, err
 		}
 		event := oas.AccountEvent{
 			EventID:    trace.Hash.Hex(),
-			Account:    convertAccountAddress(account, h.addressBook),
+			Account:    convertAccountAddress(account, book),
 			Timestamp:  trace.Utime,
 			IsScam:     false,
 			Lt:         int64(trace.Lt),
@@ -157,7 +163,7 @@ func (h *Handler) convertNftHistory(ctx context.Context, account tongo.AccountID
 			if action.Type != bath.NftItemTransfer {
 				continue
 			}
-			convertedAction, err := h.convertAction(ctx, &account, action, acceptLanguage)
+			convertedAction, err := h.convertAction(ctx, &account, action, acceptLanguage, book)
 			if err != nil {
 				return nil, 0, err
 			}

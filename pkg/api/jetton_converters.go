@@ -57,6 +57,14 @@ func (h *Handler) convertJettonHistory(ctx context.Context, account ton.AccountI
 			}
 			return nil, 0, err
 		}
+
+		var book addressBook
+		if trace.Wallets != nil {
+			book = core.NewSimpleAddressBook(trace.Wallets, h.addressBook)
+		} else {
+			book = h.addressBook
+		}
+
 		result, err := bath.FindActions(ctx, trace,
 			bath.WithStraws(bath.JettonTransfersBurnsMints),
 			bath.WithInformationSource(h.storage))
@@ -65,7 +73,7 @@ func (h *Handler) convertJettonHistory(ctx context.Context, account ton.AccountI
 		}
 		event := oas.AccountEvent{
 			EventID:    trace.Hash.Hex(),
-			Account:    convertAccountAddress(account, h.addressBook),
+			Account:    convertAccountAddress(account, book),
 			Timestamp:  trace.Utime,
 			IsScam:     false,
 			Lt:         int64(trace.Lt),
@@ -84,7 +92,7 @@ func (h *Handler) convertJettonHistory(ctx context.Context, account ton.AccountI
 			if !action.IsSubject(account) {
 				continue
 			}
-			convertedAction, err := h.convertAction(ctx, &account, action, acceptLanguage)
+			convertedAction, err := h.convertAction(ctx, &account, action, acceptLanguage, book)
 			if err != nil {
 				return nil, 0, err
 			}

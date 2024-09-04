@@ -59,7 +59,7 @@ func convertTrace(t *core.Trace, book addressBook) oas.Trace {
 	return trace
 }
 
-func (h *Handler) convertRisk(ctx context.Context, risk wallet.Risk, walletAddress tongo.AccountID) (oas.Risk, error) {
+func (h *Handler) convertRisk(ctx context.Context, risk wallet.Risk, walletAddress tongo.AccountID, book addressBook) (oas.Risk, error) {
 	oasRisk := oas.Risk{
 		TransferAllRemainingBalance: risk.TransferAllRemainingBalance,
 		// TODO: verify there is no overflow
@@ -77,11 +77,11 @@ func (h *Handler) convertRisk(ctx context.Context, risk wallet.Risk, walletAddre
 			if !ok {
 				continue
 			}
-			meta := h.GetJettonNormalizedMetadata(ctx, jettonWallet.JettonAddress)
+			meta := h.GetJettonNormalizedMetadata(ctx, jettonWallet.JettonAddress, book)
 			preview := jettonPreview(jettonWallet.JettonAddress, meta)
 			jettonQuantity := oas.JettonQuantity{
 				Quantity:      quantity.String(),
-				WalletAddress: convertAccountAddress(jettonWallet.Address, h.addressBook),
+				WalletAddress: convertAccountAddress(jettonWallet.Address, book),
 				Jetton:        preview,
 			}
 			oasRisk.Jettons = append(oasRisk.Jettons, jettonQuantity)
@@ -93,7 +93,7 @@ func (h *Handler) convertRisk(ctx context.Context, risk wallet.Risk, walletAddre
 			return oas.Risk{}, err
 		}
 		for _, item := range items {
-			nft := h.convertNFT(ctx, item, h.addressBook, h.metaCache)
+			nft := h.convertNFT(ctx, item, book, h.metaCache)
 			oasRisk.Nfts = append(oasRisk.Nfts, nft)
 		}
 	}
@@ -122,14 +122,14 @@ func signedValue(value string, viewer *tongo.AccountID, source, destination tong
 	return value
 }
 
-func (h *Handler) convertActionTonTransfer(t *bath.TonTransferAction, acceptLanguage string, viewer *tongo.AccountID) (oas.OptTonTransferAction, oas.ActionSimplePreview) {
+func (h *Handler) convertActionTonTransfer(t *bath.TonTransferAction, acceptLanguage string, viewer *tongo.AccountID, book addressBook) (oas.OptTonTransferAction, oas.ActionSimplePreview) {
 
 	var action oas.OptTonTransferAction
 	action.SetTo(oas.TonTransferAction{
 		Amount:           t.Amount,
 		Comment:          g.Opt(t.Comment),
-		Recipient:        convertAccountAddress(t.Recipient, h.addressBook),
-		Sender:           convertAccountAddress(t.Sender, h.addressBook),
+		Recipient:        convertAccountAddress(t.Recipient, book),
+		Sender:           convertAccountAddress(t.Sender, book),
 		EncryptedComment: convertEncryptedComment(t.EncryptedComment),
 	})
 	if t.Refund != nil {
@@ -150,18 +150,18 @@ func (h *Handler) convertActionTonTransfer(t *bath.TonTransferAction, acceptLang
 				"Value": value,
 			},
 		}),
-		Accounts: distinctAccounts(viewer, h.addressBook, &t.Sender, &t.Recipient),
+		Accounts: distinctAccounts(viewer, book, &t.Sender, &t.Recipient),
 		Value:    oas.NewOptString(value),
 	}
 	return action, simplePreview
 }
 
-func (h *Handler) convertActionNftTransfer(t *bath.NftTransferAction, acceptLanguage string, viewer *tongo.AccountID) (oas.OptNftItemTransferAction, oas.ActionSimplePreview) {
+func (h *Handler) convertActionNftTransfer(t *bath.NftTransferAction, acceptLanguage string, viewer *tongo.AccountID, book addressBook) (oas.OptNftItemTransferAction, oas.ActionSimplePreview) {
 	var action oas.OptNftItemTransferAction
 	action.SetTo(oas.NftItemTransferAction{
 		Nft:              t.Nft.ToRaw(),
-		Recipient:        convertOptAccountAddress(t.Recipient, h.addressBook),
-		Sender:           convertOptAccountAddress(t.Sender, h.addressBook),
+		Recipient:        convertOptAccountAddress(t.Recipient, book),
+		Sender:           convertOptAccountAddress(t.Sender, book),
 		Comment:          g.Opt(t.Comment),
 		EncryptedComment: convertEncryptedComment(t.EncryptedComment),
 	})
@@ -173,20 +173,20 @@ func (h *Handler) convertActionNftTransfer(t *bath.NftTransferAction, acceptLang
 				Other: "Transferring 1 NFT",
 			},
 		}),
-		Accounts: distinctAccounts(viewer, h.addressBook, t.Recipient, t.Sender, &t.Nft),
+		Accounts: distinctAccounts(viewer, book, t.Recipient, t.Sender, &t.Nft),
 		Value:    oas.NewOptString(fmt.Sprintf("1 NFT")),
 	}
 	return action, simplePreview
 }
 
-func (h *Handler) convertActionJettonTransfer(ctx context.Context, t *bath.JettonTransferAction, acceptLanguage string, viewer *tongo.AccountID) (oas.OptJettonTransferAction, oas.ActionSimplePreview) {
-	meta := h.GetJettonNormalizedMetadata(ctx, t.Jetton)
+func (h *Handler) convertActionJettonTransfer(ctx context.Context, t *bath.JettonTransferAction, acceptLanguage string, viewer *tongo.AccountID, book addressBook) (oas.OptJettonTransferAction, oas.ActionSimplePreview) {
+	meta := h.GetJettonNormalizedMetadata(ctx, t.Jetton, book)
 	preview := jettonPreview(t.Jetton, meta)
 	var action oas.OptJettonTransferAction
 	action.SetTo(oas.JettonTransferAction{
 		Amount:           g.Pointer(big.Int(t.Amount)).String(),
-		Recipient:        convertOptAccountAddress(t.Recipient, h.addressBook),
-		Sender:           convertOptAccountAddress(t.Sender, h.addressBook),
+		Recipient:        convertOptAccountAddress(t.Recipient, book),
+		Sender:           convertOptAccountAddress(t.Sender, book),
 		Jetton:           preview,
 		RecipientsWallet: t.RecipientsWallet.ToRaw(),
 		SendersWallet:    t.SendersWallet.ToRaw(),
@@ -208,7 +208,7 @@ func (h *Handler) convertActionJettonTransfer(ctx context.Context, t *bath.Jetto
 				"JettonName": meta.Name,
 			},
 		}),
-		Accounts: distinctAccounts(viewer, h.addressBook, t.Recipient, t.Sender, &t.Jetton),
+		Accounts: distinctAccounts(viewer, book, t.Recipient, t.Sender, &t.Jetton),
 		Value:    oas.NewOptString(fmt.Sprintf("%v %v", amountString, meta.Name)),
 	}
 	if len(preview.Image) > 0 {
@@ -217,13 +217,13 @@ func (h *Handler) convertActionJettonTransfer(ctx context.Context, t *bath.Jetto
 	return action, simplePreview
 }
 
-func (h *Handler) convertActionJettonMint(ctx context.Context, m *bath.JettonMintAction, acceptLanguage string, viewer *tongo.AccountID) (oas.OptJettonMintAction, oas.ActionSimplePreview) {
-	meta := h.GetJettonNormalizedMetadata(ctx, m.Jetton)
+func (h *Handler) convertActionJettonMint(ctx context.Context, m *bath.JettonMintAction, acceptLanguage string, viewer *tongo.AccountID, book addressBook) (oas.OptJettonMintAction, oas.ActionSimplePreview) {
+	meta := h.GetJettonNormalizedMetadata(ctx, m.Jetton, book)
 	preview := jettonPreview(m.Jetton, meta)
 	var action oas.OptJettonMintAction
 	action.SetTo(oas.JettonMintAction{
 		Amount:           g.Pointer(big.Int(m.Amount)).String(),
-		Recipient:        convertAccountAddress(m.Recipient, h.addressBook),
+		Recipient:        convertAccountAddress(m.Recipient, book),
 		Jetton:           preview,
 		RecipientsWallet: m.RecipientsWallet.ToRaw(),
 	})
@@ -241,7 +241,7 @@ func (h *Handler) convertActionJettonMint(ctx context.Context, m *bath.JettonMin
 				"JettonName": meta.Name,
 			},
 		}),
-		Accounts: distinctAccounts(viewer, h.addressBook, &m.Jetton, &m.Recipient),
+		Accounts: distinctAccounts(viewer, book, &m.Jetton, &m.Recipient),
 		Value:    oas.NewOptString(fmt.Sprintf("%v %v", amount, meta.Name)),
 	}
 	if len(preview.Image) > 0 {
@@ -250,10 +250,10 @@ func (h *Handler) convertActionJettonMint(ctx context.Context, m *bath.JettonMin
 	return action, simplePreview
 }
 
-func (h *Handler) convertActionInscriptionMint(ctx context.Context, m *bath.InscriptionMintAction, acceptLanguage string, viewer *tongo.AccountID) (oas.OptInscriptionMintAction, oas.ActionSimplePreview) {
+func (h *Handler) convertActionInscriptionMint(ctx context.Context, m *bath.InscriptionMintAction, acceptLanguage string, viewer *tongo.AccountID, book addressBook) (oas.OptInscriptionMintAction, oas.ActionSimplePreview) {
 	var action oas.OptInscriptionMintAction
 	action.SetTo(oas.InscriptionMintAction{
-		Recipient: convertAccountAddress(m.Minter, h.addressBook),
+		Recipient: convertAccountAddress(m.Minter, book),
 		Amount:    fmt.Sprintf("%v", m.Amount),
 		Type:      oas.InscriptionMintActionType(m.Type),
 		Ticker:    m.Ticker,
@@ -272,17 +272,17 @@ func (h *Handler) convertActionInscriptionMint(ctx context.Context, m *bath.Insc
 				"Ticker": m.Ticker,
 			},
 		}),
-		Accounts: distinctAccounts(viewer, h.addressBook, &m.Minter),
+		Accounts: distinctAccounts(viewer, book, &m.Minter),
 		Value:    oas.NewOptString(fmt.Sprintf("%v %v", amount, m.Ticker)),
 	}
 	return action, simplePreview
 }
 
-func (h *Handler) convertActionInscriptionTransfer(ctx context.Context, t *bath.InscriptionTransferAction, acceptLanguage string, viewer *tongo.AccountID) (oas.OptInscriptionTransferAction, oas.ActionSimplePreview) {
+func (h *Handler) convertActionInscriptionTransfer(ctx context.Context, t *bath.InscriptionTransferAction, acceptLanguage string, viewer *tongo.AccountID, book addressBook) (oas.OptInscriptionTransferAction, oas.ActionSimplePreview) {
 	var action oas.OptInscriptionTransferAction
 	action.SetTo(oas.InscriptionTransferAction{
-		Recipient: convertAccountAddress(t.Dst, h.addressBook),
-		Sender:    convertAccountAddress(t.Src, h.addressBook),
+		Recipient: convertAccountAddress(t.Dst, book),
+		Sender:    convertAccountAddress(t.Src, book),
 		Amount:    fmt.Sprintf("%v", t.Amount),
 		Type:      oas.InscriptionTransferActionType(t.Type),
 		Ticker:    t.Ticker,
@@ -301,18 +301,18 @@ func (h *Handler) convertActionInscriptionTransfer(ctx context.Context, t *bath.
 				"Ticker": t.Ticker,
 			},
 		}),
-		Accounts: distinctAccounts(viewer, h.addressBook, &t.Src, &t.Dst),
+		Accounts: distinctAccounts(viewer, book, &t.Src, &t.Dst),
 		Value:    oas.NewOptString(fmt.Sprintf("%v %v", amount, t.Ticker)),
 	}
 	return action, simplePreview
 }
 
-func (h *Handler) convertDepositStake(d *bath.DepositStakeAction, acceptLanguage string, viewer *tongo.AccountID) (oas.OptDepositStakeAction, oas.ActionSimplePreview) {
+func (h *Handler) convertDepositStake(d *bath.DepositStakeAction, acceptLanguage string, viewer *tongo.AccountID, book addressBook) (oas.OptDepositStakeAction, oas.ActionSimplePreview) {
 	var action oas.OptDepositStakeAction
 	action.SetTo(oas.DepositStakeAction{
 		Amount:         d.Amount,
-		Staker:         convertAccountAddress(d.Staker, h.addressBook),
-		Pool:           convertAccountAddress(d.Pool, h.addressBook),
+		Staker:         convertAccountAddress(d.Staker, book),
+		Pool:           convertAccountAddress(d.Pool, book),
 		Implementation: oas.PoolImplementationType(d.Implementation),
 	})
 	simplePreview := oas.ActionSimplePreview{
@@ -326,18 +326,18 @@ func (h *Handler) convertDepositStake(d *bath.DepositStakeAction, acceptLanguage
 				"Value": i18n.FormatTONs(d.Amount),
 			},
 		}),
-		Accounts: distinctAccounts(viewer, h.addressBook, &d.Staker, &d.Pool),
+		Accounts: distinctAccounts(viewer, book, &d.Staker, &d.Pool),
 		Value:    oas.NewOptString(i18n.FormatTONs(d.Amount)),
 	}
 	return action, simplePreview
 }
 
-func (h *Handler) convertWithdrawStakeRequest(d *bath.WithdrawStakeRequestAction, acceptLanguage string, viewer *tongo.AccountID) (oas.OptWithdrawStakeRequestAction, oas.ActionSimplePreview) {
+func (h *Handler) convertWithdrawStakeRequest(d *bath.WithdrawStakeRequestAction, acceptLanguage string, viewer *tongo.AccountID, book addressBook) (oas.OptWithdrawStakeRequestAction, oas.ActionSimplePreview) {
 	var action oas.OptWithdrawStakeRequestAction
 	action.SetTo(oas.WithdrawStakeRequestAction{
 		Amount:         g.Opt(d.Amount),
-		Staker:         convertAccountAddress(d.Staker, h.addressBook),
-		Pool:           convertAccountAddress(d.Pool, h.addressBook),
+		Staker:         convertAccountAddress(d.Staker, book),
+		Pool:           convertAccountAddress(d.Pool, book),
 		Implementation: oas.PoolImplementationType(d.Implementation),
 	})
 	value := "ALL"
@@ -353,7 +353,7 @@ func (h *Handler) convertWithdrawStakeRequest(d *bath.WithdrawStakeRequestAction
 			},
 			TemplateData: i18n.Template{"Value": value},
 		}),
-		Accounts: distinctAccounts(viewer, h.addressBook, &d.Staker, &d.Pool),
+		Accounts: distinctAccounts(viewer, book, &d.Staker, &d.Pool),
 		Value:    oas.NewOptString(value),
 	}
 	if d.Amount != nil {
@@ -362,12 +362,12 @@ func (h *Handler) convertWithdrawStakeRequest(d *bath.WithdrawStakeRequestAction
 	return action, simplePreview
 }
 
-func (h *Handler) convertWithdrawStake(d *bath.WithdrawStakeAction, acceptLanguage string, viewer *tongo.AccountID) (oas.OptWithdrawStakeAction, oas.ActionSimplePreview) {
+func (h *Handler) convertWithdrawStake(d *bath.WithdrawStakeAction, acceptLanguage string, viewer *tongo.AccountID, book addressBook) (oas.OptWithdrawStakeAction, oas.ActionSimplePreview) {
 	var action oas.OptWithdrawStakeAction
 	action.SetTo(oas.WithdrawStakeAction{
 		Amount:         d.Amount,
-		Staker:         convertAccountAddress(d.Staker, h.addressBook),
-		Pool:           convertAccountAddress(d.Pool, h.addressBook),
+		Staker:         convertAccountAddress(d.Staker, book),
+		Pool:           convertAccountAddress(d.Pool, book),
 		Implementation: oas.PoolImplementationType(d.Implementation),
 	})
 	simplePreview := oas.ActionSimplePreview{
@@ -379,13 +379,13 @@ func (h *Handler) convertWithdrawStake(d *bath.WithdrawStakeAction, acceptLangua
 			},
 			TemplateData: i18n.Template{"Value": i18n.FormatTONs(d.Amount)},
 		}),
-		Accounts: distinctAccounts(viewer, h.addressBook, &d.Staker, &d.Pool),
+		Accounts: distinctAccounts(viewer, book, &d.Staker, &d.Pool),
 		Value:    oas.NewOptString(i18n.FormatTONs(d.Amount)),
 	}
 	return action, simplePreview
 }
 
-func (h *Handler) convertDomainRenew(ctx context.Context, d *bath.DnsRenewAction, acceptLanguage string, viewer *tongo.AccountID) (oas.OptDomainRenewAction, oas.ActionSimplePreview) {
+func (h *Handler) convertDomainRenew(ctx context.Context, d *bath.DnsRenewAction, acceptLanguage string, viewer *tongo.AccountID, book addressBook) (oas.OptDomainRenewAction, oas.ActionSimplePreview) {
 	var action oas.OptDomainRenewAction
 	var domain = "unknown"
 	nfts, err := h.storage.GetNFTs(ctx, []ton.AccountID{d.Item})
@@ -395,7 +395,7 @@ func (h *Handler) convertDomainRenew(ctx context.Context, d *bath.DnsRenewAction
 	action.SetTo(oas.DomainRenewAction{
 		Domain:          domain,
 		ContractAddress: d.Item.String(),
-		Renewer:         convertAccountAddress(d.Renewer, h.addressBook),
+		Renewer:         convertAccountAddress(d.Renewer, book),
 	})
 	simplePreview := oas.ActionSimplePreview{
 		Name: "Domain Renew",
@@ -406,13 +406,13 @@ func (h *Handler) convertDomainRenew(ctx context.Context, d *bath.DnsRenewAction
 			},
 			TemplateData: i18n.Template{"Value": domain},
 		}),
-		Accounts: distinctAccounts(viewer, h.addressBook, &d.Renewer, &d.Item),
+		Accounts: distinctAccounts(viewer, book, &d.Renewer, &d.Item),
 		Value:    oas.NewOptString(domain),
 	}
 	return action, simplePreview
 }
 
-func (h *Handler) convertAction(ctx context.Context, viewer *tongo.AccountID, a bath.Action, acceptLanguage oas.OptString) (oas.Action, error) {
+func (h *Handler) convertAction(ctx context.Context, viewer *tongo.AccountID, a bath.Action, acceptLanguage oas.OptString, book addressBook) (oas.Action, error) {
 	action := oas.Action{
 		Type:             oas.ActionType(a.Type),
 		BaseTransactions: make([]string, len(a.BaseTransactions)),
@@ -432,19 +432,19 @@ func (h *Handler) convertAction(ctx context.Context, viewer *tongo.AccountID, a 
 	}
 	switch a.Type {
 	case bath.TonTransfer:
-		action.TonTransfer, action.SimplePreview = h.convertActionTonTransfer(a.TonTransfer, acceptLanguage.Value, viewer)
+		action.TonTransfer, action.SimplePreview = h.convertActionTonTransfer(a.TonTransfer, acceptLanguage.Value, viewer, book)
 	case bath.NftItemTransfer:
-		action.NftItemTransfer, action.SimplePreview = h.convertActionNftTransfer(a.NftItemTransfer, acceptLanguage.Value, viewer)
+		action.NftItemTransfer, action.SimplePreview = h.convertActionNftTransfer(a.NftItemTransfer, acceptLanguage.Value, viewer, book)
 	case bath.JettonTransfer:
-		action.JettonTransfer, action.SimplePreview = h.convertActionJettonTransfer(ctx, a.JettonTransfer, acceptLanguage.Value, viewer)
+		action.JettonTransfer, action.SimplePreview = h.convertActionJettonTransfer(ctx, a.JettonTransfer, acceptLanguage.Value, viewer, book)
 	case bath.JettonMint:
-		action.JettonMint, action.SimplePreview = h.convertActionJettonMint(ctx, a.JettonMint, acceptLanguage.Value, viewer)
+		action.JettonMint, action.SimplePreview = h.convertActionJettonMint(ctx, a.JettonMint, acceptLanguage.Value, viewer, book)
 	case bath.JettonBurn:
-		meta := h.GetJettonNormalizedMetadata(ctx, a.JettonBurn.Jetton)
+		meta := h.GetJettonNormalizedMetadata(ctx, a.JettonBurn.Jetton, book)
 		preview := jettonPreview(a.JettonBurn.Jetton, meta)
 		action.JettonBurn.SetTo(oas.JettonBurnAction{
 			Amount:        g.Pointer(big.Int(a.JettonBurn.Amount)).String(),
-			Sender:        convertAccountAddress(a.JettonBurn.Sender, h.addressBook),
+			Sender:        convertAccountAddress(a.JettonBurn.Sender, book),
 			Jetton:        preview,
 			SendersWallet: a.JettonBurn.SendersWallet.ToRaw(),
 		})
@@ -464,18 +464,18 @@ func (h *Handler) convertAction(ctx context.Context, viewer *tongo.AccountID, a 
 					"JettonName": meta.Name,
 				},
 			}),
-			Accounts: distinctAccounts(viewer, h.addressBook, &a.JettonBurn.Sender, &a.JettonBurn.Jetton),
+			Accounts: distinctAccounts(viewer, book, &a.JettonBurn.Sender, &a.JettonBurn.Jetton),
 			Value:    oas.NewOptString(fmt.Sprintf("%v %v", amount, meta.Name)),
 		}
 	case bath.InscriptionMint:
-		action.InscriptionMint, action.SimplePreview = h.convertActionInscriptionMint(ctx, a.InscriptionMint, acceptLanguage.Value, viewer)
+		action.InscriptionMint, action.SimplePreview = h.convertActionInscriptionMint(ctx, a.InscriptionMint, acceptLanguage.Value, viewer, book)
 	case bath.InscriptionTransfer:
-		action.InscriptionTransfer, action.SimplePreview = h.convertActionInscriptionTransfer(ctx, a.InscriptionTransfer, acceptLanguage.Value, viewer)
+		action.InscriptionTransfer, action.SimplePreview = h.convertActionInscriptionTransfer(ctx, a.InscriptionTransfer, acceptLanguage.Value, viewer, book)
 	case bath.Subscription:
 		action.Subscribe.SetTo(oas.SubscriptionAction{
 			Amount:       a.Subscription.Amount,
-			Beneficiary:  convertAccountAddress(a.Subscription.Beneficiary, h.addressBook),
-			Subscriber:   convertAccountAddress(a.Subscription.Subscriber, h.addressBook),
+			Beneficiary:  convertAccountAddress(a.Subscription.Beneficiary, book),
+			Subscriber:   convertAccountAddress(a.Subscription.Subscriber, book),
 			Subscription: a.Subscription.Subscription.ToRaw(),
 			Initial:      a.Subscription.First,
 		})
@@ -491,13 +491,13 @@ func (h *Handler) convertAction(ctx context.Context, viewer *tongo.AccountID, a 
 					"Value": value,
 				},
 			}),
-			Accounts: distinctAccounts(viewer, h.addressBook, &a.Subscription.Beneficiary, &a.Subscription.Subscriber),
+			Accounts: distinctAccounts(viewer, book, &a.Subscription.Beneficiary, &a.Subscription.Subscriber),
 			Value:    oas.NewOptString(value),
 		}
 	case bath.UnSubscription:
 		action.UnSubscribe.SetTo(oas.UnSubscriptionAction{
-			Beneficiary:  convertAccountAddress(a.UnSubscription.Beneficiary, h.addressBook),
-			Subscriber:   convertAccountAddress(a.UnSubscription.Subscriber, h.addressBook),
+			Beneficiary:  convertAccountAddress(a.UnSubscription.Beneficiary, book),
+			Subscriber:   convertAccountAddress(a.UnSubscription.Subscriber, book),
 			Subscription: a.UnSubscription.Subscription.ToRaw(),
 		})
 	case bath.ContractDeploy:
@@ -520,7 +520,7 @@ func (h *Handler) convertAction(ctx context.Context, viewer *tongo.AccountID, a 
 					"Interfaces": strings.Join(interfaces, ", "),
 				},
 			}),
-			Accounts: distinctAccounts(viewer, h.addressBook, &a.ContractDeploy.Address),
+			Accounts: distinctAccounts(viewer, book, &a.ContractDeploy.Address),
 		}
 	case bath.NftPurchase:
 		price := a.NftPurchase.Price
@@ -534,7 +534,7 @@ func (h *Handler) convertAction(ctx context.Context, viewer *tongo.AccountID, a 
 		var name string
 		if len(items) == 1 {
 			// opentonapi doesn't implement GetNFTs() now
-			nft = h.convertNFT(ctx, items[0], h.addressBook, h.metaCache)
+			nft = h.convertNFT(ctx, items[0], book, h.metaCache)
 			if len(nft.Previews) > 0 {
 				nftImage = nft.Previews[0].URL
 			}
@@ -551,7 +551,7 @@ func (h *Handler) convertAction(ctx context.Context, viewer *tongo.AccountID, a 
 					"Name": name,
 				},
 			}),
-			Accounts:   distinctAccounts(viewer, h.addressBook, &a.NftPurchase.Nft, &a.NftPurchase.Buyer),
+			Accounts:   distinctAccounts(viewer, book, &a.NftPurchase.Nft, &a.NftPurchase.Buyer),
 			Value:      oas.NewOptString(value),
 			ValueImage: oas.NewOptString(nftImage),
 		}
@@ -559,14 +559,14 @@ func (h *Handler) convertAction(ctx context.Context, viewer *tongo.AccountID, a 
 			AuctionType: oas.NftPurchaseActionAuctionType(a.NftPurchase.AuctionType),
 			Amount:      oas.Price{Value: fmt.Sprintf("%d", price), TokenName: "TON"},
 			Nft:         nft,
-			Seller:      convertAccountAddress(a.NftPurchase.Seller, h.addressBook),
-			Buyer:       convertAccountAddress(a.NftPurchase.Buyer, h.addressBook),
+			Seller:      convertAccountAddress(a.NftPurchase.Seller, book),
+			Buyer:       convertAccountAddress(a.NftPurchase.Buyer, book),
 		})
 	case bath.ElectionsDepositStake:
 		value := i18n.FormatTONs(a.ElectionsDepositStake.Amount)
 		action.ElectionsDepositStake.SetTo(oas.ElectionsDepositStakeAction{
 			Amount: a.ElectionsDepositStake.Amount,
-			Staker: convertAccountAddress(a.ElectionsDepositStake.Staker, h.addressBook),
+			Staker: convertAccountAddress(a.ElectionsDepositStake.Staker, book),
 		})
 		action.SimplePreview = oas.ActionSimplePreview{
 			Name: "Deposit Stake",
@@ -580,13 +580,13 @@ func (h *Handler) convertAction(ctx context.Context, viewer *tongo.AccountID, a 
 				},
 			}),
 			Value:    oas.NewOptString(signedValue(value, viewer, a.ElectionsDepositStake.Staker, a.ElectionsDepositStake.Elector)),
-			Accounts: distinctAccounts(viewer, h.addressBook, &a.ElectionsDepositStake.Elector, &a.ElectionsDepositStake.Staker),
+			Accounts: distinctAccounts(viewer, book, &a.ElectionsDepositStake.Elector, &a.ElectionsDepositStake.Staker),
 		}
 	case bath.ElectionsRecoverStake:
 		value := i18n.FormatTONs(a.ElectionsRecoverStake.Amount)
 		action.ElectionsRecoverStake.SetTo(oas.ElectionsRecoverStakeAction{
 			Amount: a.ElectionsRecoverStake.Amount,
-			Staker: convertAccountAddress(a.ElectionsRecoverStake.Staker, h.addressBook),
+			Staker: convertAccountAddress(a.ElectionsRecoverStake.Staker, book),
 		})
 		action.SimplePreview = oas.ActionSimplePreview{
 			Name: "Recover Stake",
@@ -600,13 +600,13 @@ func (h *Handler) convertAction(ctx context.Context, viewer *tongo.AccountID, a 
 				},
 			}),
 			Value:    oas.NewOptString(signedValue(value, viewer, a.ElectionsRecoverStake.Elector, a.ElectionsRecoverStake.Staker)),
-			Accounts: distinctAccounts(viewer, h.addressBook, &a.ElectionsRecoverStake.Elector, &a.ElectionsRecoverStake.Staker),
+			Accounts: distinctAccounts(viewer, book, &a.ElectionsRecoverStake.Elector, &a.ElectionsRecoverStake.Staker),
 		}
 	case bath.JettonSwap:
 		action.Type = oas.ActionTypeJettonSwap
 		swapAction := oas.JettonSwapAction{
-			UserWallet: convertAccountAddress(a.JettonSwap.UserWallet, h.addressBook),
-			Router:     convertAccountAddress(a.JettonSwap.Router, h.addressBook),
+			UserWallet: convertAccountAddress(a.JettonSwap.UserWallet, book),
+			Router:     convertAccountAddress(a.JettonSwap.Router, book),
 		}
 		simplePreviewData := i18n.Template{}
 		if a.JettonSwap.In.IsTon {
@@ -615,7 +615,7 @@ func (h *Handler) convertAction(ctx context.Context, viewer *tongo.AccountID, a 
 			simplePreviewData["AmountIn"] = i18n.FormatTONs(a.JettonSwap.In.Amount.Int64())
 		} else {
 			swapAction.AmountIn = a.JettonSwap.In.Amount.String()
-			jettonInMeta := h.GetJettonNormalizedMetadata(ctx, a.JettonSwap.In.JettonMaster)
+			jettonInMeta := h.GetJettonNormalizedMetadata(ctx, a.JettonSwap.In.JettonMaster, book)
 			preview := jettonPreview(a.JettonSwap.In.JettonMaster, jettonInMeta)
 			swapAction.JettonMasterIn.SetTo(preview)
 			simplePreviewData["JettonIn"] = preview.GetSymbol()
@@ -627,7 +627,7 @@ func (h *Handler) convertAction(ctx context.Context, viewer *tongo.AccountID, a 
 			simplePreviewData["AmountOut"] = i18n.FormatTONs(a.JettonSwap.Out.Amount.Int64())
 		} else {
 			swapAction.AmountOut = a.JettonSwap.Out.Amount.String()
-			jettonOutMeta := h.GetJettonNormalizedMetadata(ctx, a.JettonSwap.Out.JettonMaster)
+			jettonOutMeta := h.GetJettonNormalizedMetadata(ctx, a.JettonSwap.Out.JettonMaster, book)
 			preview := jettonPreview(a.JettonSwap.Out.JettonMaster, jettonOutMeta)
 			swapAction.JettonMasterOut.SetTo(preview)
 			simplePreviewData["JettonOut"] = preview.GetSymbol()
@@ -654,7 +654,7 @@ func (h *Handler) convertAction(ctx context.Context, viewer *tongo.AccountID, a 
 				},
 				TemplateData: simplePreviewData,
 			}),
-			Accounts: distinctAccounts(viewer, h.addressBook, &a.JettonSwap.UserWallet, &a.JettonSwap.Router),
+			Accounts: distinctAccounts(viewer, book, &a.JettonSwap.UserWallet, &a.JettonSwap.Router),
 		}
 	case bath.AuctionBid:
 		var nft oas.OptNftItem
@@ -670,15 +670,15 @@ func (h *Handler) convertAction(ctx context.Context, viewer *tongo.AccountID, a 
 		if a.AuctionBid.Nft == nil {
 			return oas.Action{}, fmt.Errorf("nft is nil")
 		}
-		nft.SetTo(h.convertNFT(ctx, *a.AuctionBid.Nft, h.addressBook, h.metaCache))
+		nft.SetTo(h.convertNFT(ctx, *a.AuctionBid.Nft, book, h.metaCache))
 		action.AuctionBid.SetTo(oas.AuctionBidAction{
 			Amount: oas.Price{
 				Value:     fmt.Sprintf("%v", a.AuctionBid.Amount),
 				TokenName: "TON",
 			},
 			Nft:     nft,
-			Bidder:  convertAccountAddress(a.AuctionBid.Bidder, h.addressBook),
-			Auction: convertAccountAddress(a.AuctionBid.Auction, h.addressBook),
+			Bidder:  convertAccountAddress(a.AuctionBid.Bidder, book),
+			Auction: convertAccountAddress(a.AuctionBid.Auction, book),
 		})
 		if a.AuctionBid.Nft.CollectionAddress != nil && *a.AuctionBid.Nft.CollectionAddress == references.RootTelegram {
 			action.AuctionBid.Value.AuctionType = oas.AuctionBidActionAuctionTypeDNSTg
@@ -697,7 +697,7 @@ func (h *Handler) convertAction(ctx context.Context, viewer *tongo.AccountID, a 
 					"NftName": optionalFromMeta(nft.Value.Metadata, "name"),
 				},
 			}),
-			Accounts: distinctAccounts(viewer, h.addressBook, &a.AuctionBid.Bidder, &a.AuctionBid.Auction),
+			Accounts: distinctAccounts(viewer, book, &a.AuctionBid.Bidder, &a.AuctionBid.Auction),
 		}
 	case bath.SmartContractExec:
 		op := "Call"
@@ -708,8 +708,8 @@ func (h *Handler) convertAction(ctx context.Context, viewer *tongo.AccountID, a 
 			op = "JettonAdminAction"
 		}
 		contractAction := oas.SmartContractAction{
-			Executor:    convertAccountAddress(a.SmartContractExec.Executor, h.addressBook),
-			Contract:    convertAccountAddress(a.SmartContractExec.Contract, h.addressBook),
+			Executor:    convertAccountAddress(a.SmartContractExec.Executor, book),
+			Contract:    convertAccountAddress(a.SmartContractExec.Contract, book),
 			TonAttached: a.SmartContractExec.TonAttached,
 			Operation:   op,
 			Refund:      oas.OptRefund{},
@@ -722,20 +722,20 @@ func (h *Handler) convertAction(ctx context.Context, viewer *tongo.AccountID, a 
 					Other: "Execution of smart contract",
 				},
 			}),
-			Accounts: distinctAccounts(viewer, h.addressBook, &a.SmartContractExec.Executor, &a.SmartContractExec.Contract),
+			Accounts: distinctAccounts(viewer, book, &a.SmartContractExec.Executor, &a.SmartContractExec.Contract),
 		}
 		if a.SmartContractExec.Payload != "" {
 			contractAction.Payload.SetTo(a.SmartContractExec.Payload)
 		}
 		action.SmartContractExec.SetTo(contractAction)
 	case bath.DepositStake:
-		action.DepositStake, action.SimplePreview = h.convertDepositStake(a.DepositStake, acceptLanguage.Value, viewer)
+		action.DepositStake, action.SimplePreview = h.convertDepositStake(a.DepositStake, acceptLanguage.Value, viewer, book)
 	case bath.WithdrawStakeRequest:
-		action.WithdrawStakeRequest, action.SimplePreview = h.convertWithdrawStakeRequest(a.WithdrawStakeRequest, acceptLanguage.Value, viewer)
+		action.WithdrawStakeRequest, action.SimplePreview = h.convertWithdrawStakeRequest(a.WithdrawStakeRequest, acceptLanguage.Value, viewer, book)
 	case bath.WithdrawStake:
-		action.WithdrawStake, action.SimplePreview = h.convertWithdrawStake(a.WithdrawStake, acceptLanguage.Value, viewer)
+		action.WithdrawStake, action.SimplePreview = h.convertWithdrawStake(a.WithdrawStake, acceptLanguage.Value, viewer, book)
 	case bath.DomainRenew:
-		action.DomainRenew, action.SimplePreview = h.convertDomainRenew(ctx, a.DnsRenew, acceptLanguage.Value, viewer)
+		action.DomainRenew, action.SimplePreview = h.convertDomainRenew(ctx, a.DnsRenew, acceptLanguage.Value, viewer, book)
 
 	}
 	return action, nil
@@ -758,6 +758,13 @@ func convertAccountValueFlow(accountID tongo.AccountID, flow *bath.AccountValueF
 }
 
 func (h *Handler) toEvent(ctx context.Context, trace *core.Trace, result *bath.ActionsList, lang oas.OptString) (oas.Event, error) {
+	var book addressBook
+	if trace.Wallets != nil {
+		book = core.NewSimpleAddressBook(trace.Wallets, h.addressBook)
+	} else {
+		book = h.addressBook
+	}
+
 	event := oas.Event{
 		EventID:    trace.Hash.Hex(),
 		Timestamp:  trace.Utime,
@@ -768,7 +775,7 @@ func (h *Handler) toEvent(ctx context.Context, trace *core.Trace, result *bath.A
 		InProgress: trace.InProgress(),
 	}
 	for i, a := range result.Actions {
-		convertedAction, err := h.convertAction(ctx, nil, a, lang)
+		convertedAction, err := h.convertAction(ctx, nil, a, lang, book)
 		if err != nil {
 			return oas.Event{}, err
 		}
@@ -781,12 +788,12 @@ func (h *Handler) toEvent(ctx context.Context, trace *core.Trace, result *bath.A
 			if _, ok := previews[jettonMaster]; ok {
 				continue
 			}
-			meta := h.GetJettonNormalizedMetadata(ctx, jettonMaster)
+			meta := h.GetJettonNormalizedMetadata(ctx, jettonMaster, book)
 			previews[jettonMaster] = jettonPreview(jettonMaster, meta)
 		}
 	}
 	for accountID, flow := range result.ValueFlow.Accounts {
-		event.ValueFlow = append(event.ValueFlow, convertAccountValueFlow(accountID, flow, h.addressBook, previews))
+		event.ValueFlow = append(event.ValueFlow, convertAccountValueFlow(accountID, flow, book, previews))
 	}
 	return event, nil
 }
@@ -834,9 +841,16 @@ func (h *Handler) toUnknownAccountEvent(account tongo.AccountID, traceID core.Tr
 }
 
 func (h *Handler) toAccountEvent(ctx context.Context, account tongo.AccountID, trace *core.Trace, result *bath.ActionsList, lang oas.OptString, subjectOnly bool) (oas.AccountEvent, error) {
+	var book addressBook
+	if trace.Wallets != nil {
+		book = core.NewSimpleAddressBook(trace.Wallets, h.addressBook)
+	} else {
+		book = h.addressBook
+	}
+
 	e := oas.AccountEvent{
 		EventID:    trace.Hash.Hex(),
-		Account:    convertAccountAddress(account, h.addressBook),
+		Account:    convertAccountAddress(account, book),
 		Timestamp:  trace.Utime,
 		IsScam:     false,
 		Lt:         int64(trace.Lt),
@@ -847,7 +861,7 @@ func (h *Handler) toAccountEvent(ctx context.Context, account tongo.AccountID, t
 		if subjectOnly && !a.IsSubject(account) {
 			continue
 		}
-		convertedAction, err := h.convertAction(ctx, &account, a, lang)
+		convertedAction, err := h.convertAction(ctx, &account, a, lang, book)
 		if err != nil {
 			return oas.AccountEvent{}, err
 		}
@@ -858,7 +872,7 @@ func (h *Handler) toAccountEvent(ctx context.Context, account tongo.AccountID, t
 	}
 	if len(e.Actions) == 0 {
 		e.Actions = []oas.Action{
-			createUnknownAction("Something happened but we don't understand what.", []oas.AccountAddress{convertAccountAddress(account, h.addressBook)}),
+			createUnknownAction("Something happened but we don't understand what.", []oas.AccountAddress{convertAccountAddress(account, book)}),
 		}
 	}
 	return e, nil

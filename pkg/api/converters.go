@@ -216,7 +216,7 @@ func stringToTVMStackRecord(s string) (tlb.VmStackValue, error) {
 	return tlb.VmStackValue{SumType: "VmStkCell", VmStkCell: tlb.Ref[boc.Cell]{Value: *c}}, nil
 }
 
-func (h *Handler) convertMultisig(ctx context.Context, item core.Multisig) (*oas.Multisig, error) {
+func (h *Handler) convertMultisig(ctx context.Context, item core.Multisig, book addressBook) (*oas.Multisig, error) {
 	converted := oas.Multisig{
 		Address:   item.AccountID.ToRaw(),
 		Seqno:     item.Seqno,
@@ -241,7 +241,7 @@ func (h *Handler) convertMultisig(ctx context.Context, item core.Multisig) (*oas
 		if err != nil {
 			return nil, err
 		}
-		oasRisk, err := h.convertRisk(ctx, *risk, item.AccountID)
+		oasRisk, err := h.convertRisk(ctx, *risk, item.AccountID, book)
 		if err != nil {
 			return nil, err
 		}

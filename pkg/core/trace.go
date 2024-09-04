@@ -36,6 +36,9 @@ type Trace struct {
 	// It is protected by a mutex because we cache traces and set additionalInfo independently of the trace itself.
 	// so it happens that two different goroutines get a trace from the cache and attempt to set additionalInfo.
 	additionalInfo *TraceAdditionalInfo
+
+	// The addresses of all wallets in the entire trace.
+	Wallets map[tongo.AccountID]bool
 }
 
 // TraceAdditionalInfo holds information about a trace

@@ -227,10 +227,10 @@ func NewHandler(logger *zap.Logger, opts ...Option) (*Handler, error) {
 	}, nil
 }
 
-func (h *Handler) GetJettonNormalizedMetadata(ctx context.Context, master tongo.AccountID) NormalizedMetadata {
+func (h *Handler) GetJettonNormalizedMetadata(ctx context.Context, master tongo.AccountID, book addressBook) NormalizedMetadata {
 	meta, _ := h.metaCache.getJettonMeta(ctx, master)
 	// TODO: should we ignore the second returned value?
-	if info, ok := h.addressBook.GetJettonInfoByAddress(master); ok {
+	if info, ok := book.GetJettonInfoByAddress(master); ok {
 		return NormalizeMetadata(meta, &info, core.TrustNone)
 	}
 	return NormalizeMetadata(meta, nil, h.spamFilter.JettonTrust(master, meta.Symbol, meta.Name, meta.Image))

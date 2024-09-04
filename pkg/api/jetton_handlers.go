@@ -74,7 +74,7 @@ func (h *Handler) GetJettonInfo(ctx context.Context, params oas.GetJettonInfoPar
 	if err != nil {
 		return nil, toError(http.StatusBadRequest, err)
 	}
-	meta := h.GetJettonNormalizedMetadata(ctx, account.ID)
+	meta := h.GetJettonNormalizedMetadata(ctx, account.ID, h.addressBook)
 	metadata := jettonMetadata(account.ID, meta)
 	data, err := h.storage.GetJettonMasterData(ctx, account.ID)
 	if errors.Is(err, core.ErrEntityNotFound) {
@@ -168,7 +168,7 @@ func (h *Handler) GetJettons(ctx context.Context, params oas.GetJettonsParams) (
 		return nil, toError(http.StatusInternalServerError, err)
 	}
 	for _, master := range jettons {
-		meta := h.GetJettonNormalizedMetadata(ctx, master.Address)
+		meta := h.GetJettonNormalizedMetadata(ctx, master.Address, h.addressBook)
 		metadata := jettonMetadata(master.Address, meta)
 		info := oas.JettonInfo{
 			Mintable:     master.Mintable,
