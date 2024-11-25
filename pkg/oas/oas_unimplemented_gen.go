@@ -680,6 +680,24 @@ func (UnimplementedHandler) GetNftItemsByAddresses(ctx context.Context, req OptG
 	return r, ht.ErrNotImplemented
 }
 
+// GetOkxEnhancedBlockchainTransaction implements getOkxEnhancedBlockchainTransaction operation.
+//
+// Get OKX-enhanced transaction data.
+//
+// GET /v2/okx/blockchain/transactions/{transaction_id}
+func (UnimplementedHandler) GetOkxEnhancedBlockchainTransaction(ctx context.Context, params GetOkxEnhancedBlockchainTransactionParams) (r *OkxTransaction, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// GetOkxEnhancedBlockchainTransactions implements getOkxEnhancedBlockchainTransactions operation.
+//
+// Get OKX-enhanced transactions from block.
+//
+// GET /v2/okx/blockchain/blocks/{block_id}/transactions
+func (UnimplementedHandler) GetOkxEnhancedBlockchainTransactions(ctx context.Context, params GetOkxEnhancedBlockchainTransactionsParams) (r *OkxTransactions, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // GetOpenapiJson implements getOpenapiJson operation.
 //
 // Get the openapi.json file.
