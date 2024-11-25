@@ -309,6 +309,40 @@ paths:
                 $ref: '#/components/schemas/Transaction'
         'default':
           $ref: '#/components/responses/Error'
+  /v2/okx/blockchain/blocks/{block_id}/transactions:
+    get:
+      description: Get OKX-enhanced transactions from block
+      operationId: getOkxEnhancedBlockchainTransactions
+      tags:
+        - Blockchain
+      parameters:
+        - $ref: '#/components/parameters/blockchainBlockIDParameter'
+      responses:
+        '200':
+          description: blockchain block transactions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkxTransactions'
+        'default':
+          $ref: '#/components/responses/Error'
+  /v2/okx/blockchain/transactions/{transaction_id}:
+    get:
+      description: Get OKX-enhanced transaction data
+      operationId: getOkxEnhancedBlockchainTransaction
+      tags:
+        - Blockchain
+      parameters:
+        - $ref: '#/components/parameters/transactionIDParameter'
+      responses:
+        '200':
+          description: blockchain transaction
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkxTransaction'
+        'default':
+          $ref: '#/components/responses/Error'
   /v2/blockchain/messages/{msg_id}/transaction:
     get:
       description: Get transaction data by message hash
@@ -3895,6 +3929,42 @@ components:
           type: string
           example: "nft_transfer"
         decoded_body: { } # Free-form JSON value
+    OkxMessage:
+      allOf:
+        - $ref: '#/components/schemas/Message'
+        - type: object
+          properties:
+            jetton_transfer_info:
+              $ref: '#/components/schemas/OkxJettonTransferInfo'
+    OkxJettonTransferInfo:
+      type: object
+      required:
+        - sender
+        - senders_wallet
+        - recipient
+        - recipients_wallet
+        - jetton
+      properties:
+        sender:
+          type: string
+          format: address
+          example: 0:10C1073837B93FDAAD594284CE8B8EFF7B9CF25427440EB2FC682762E1471365
+        recipient:
+          type: string
+          format: address
+          example: 0:10C1073837B93FDAAD594284CE8B8EFF7B9CF25427440EB2FC682762E1471365
+        senders_wallet:
+          type: string
+          format: address
+          example: 0:10C1073837B93FDAAD594284CE8B8EFF7B9CF25427440EB2FC682762E1471365
+        recipients_wallet:
+          type: string
+          format: address
+          example: 0:10C1073837B93FDAAD594284CE8B8EFF7B9CF25427440EB2FC682762E1471365
+        jetton:
+          type: string
+          format: address
+          example: 0:10C1073837B93FDAAD594284CE8B8EFF7B9CF25427440EB2FC682762E1471365
     TransactionType:
       type: string
       example: TransOrd
@@ -4130,6 +4200,108 @@ components:
           format: cell
           description: "hex encoded boc with raw transaction"
           example: "b5ee9c72410206010001380003b372cf3b5b8c891e517c9addbda1c0386a09ccacbb0e3faf630b51cfc8152325acb00002ac5795c0e41fdf79135cb7da03cc623b165d614b562a51eeccd8a5e097f405abf6b37f4e73000002ac5629732c1666887ed000144030480102030101a004008272abc8f2971aa4404ac6da1597720f348b2e1247b1ad9f55cbd3b6812f0a5f08b269bb65039fb1f6074d00f794e857f6dfd01131d299df456af10a8a4943d4d165000d0c80608840492001ab48015581f575c3b8c6ab3d6"
+    OkxTransaction:
+      type: object
+      required:
+        - hash
+        - lt
+        - account
+        - end_balance
+        - success
+        - utime
+        - orig_status
+        - end_status
+        - total_fees
+        - transaction_type
+        - state_update_old
+        - state_update_new
+        - out_msgs
+        - block
+        - masterchain_block
+        - aborted
+        - destroyed
+        - raw
+      properties:
+        hash:
+          type: string
+          example: 55e8809519cd3c49098c9ee45afdafcea7a894a74d0f628d94a115a50e045122
+        lt:
+          type: integer
+          format: int64
+          example: 25713146000001
+          x-js-format: bigint
+        account:
+          $ref: '#/components/schemas/AccountAddress'
+        success:
+          type: boolean
+          example: true
+        utime:
+          type: integer
+          format: int64
+          example: 1645544908
+        orig_status:
+          $ref: '#/components/schemas/AccountStatus'
+        end_status:
+          $ref: '#/components/schemas/AccountStatus'
+        total_fees:
+          type: integer
+          format: int64
+          x-js-format: bigint
+          example: 25713146000001
+        end_balance:
+          type: integer
+          format: int64
+          x-js-format: bigint
+          example: 25713146000001
+        transaction_type:
+          $ref: '#/components/schemas/TransactionType'
+        state_update_old:
+          type: string
+          example: 55e8809519cd3c49098c9ee45afdafcea7a894a74d0f628d94a115a50e045122
+        state_update_new:
+          type: string
+          example: 55e8809519cd3c49098c9ee45afdafcea7a894a74d0f628d94a115a50e045122
+        in_msg:
+          $ref: '#/components/schemas/OkxMessage'
+        out_msgs:
+          type: array
+          items:
+            $ref: '#/components/schemas/OkxMessage'
+        block:
+          type: string
+          example: (-1,4234234,8000000000000000)
+        masterchain_block:
+          type: string
+          example: (-1,4234234,8000000000000000)
+        prev_trans_hash:
+          type: string
+          example: 55e8809519cd3c49098c9ee45afdafcea7a894a74d0f628d94a115a50e045122
+        prev_trans_lt:
+          type: integer
+          format: int64
+          x-js-format: bigint
+          example: 25713146000001
+        compute_phase:
+          $ref: '#/components/schemas/ComputePhase'
+        storage_phase:
+          $ref: '#/components/schemas/StoragePhase'
+        credit_phase:
+          $ref: '#/components/schemas/CreditPhase'
+        action_phase:
+          $ref: '#/components/schemas/ActionPhase'
+        bounce_phase:
+          $ref: '#/components/schemas/BouncePhaseType'
+        aborted:
+          type: boolean
+          example: true
+        destroyed:
+          type: boolean
+          example: true
+        raw:
+          type: string
+          format: cell
+          description: "hex encoded boc with raw transaction"
+          example: "b5ee9c72410206010001380003b372cf3b5b8c891e517c9addbda1c0386a09ccacbb0e3faf630b51cfc8152325acb00002ac5795c0e41fdf79135cb7da03cc623b165d614b562a51eeccd8a5e097f405abf6b37f4e73000002ac5629732c1666887ed000144030480102030101a004008272abc8f2971aa4404ac6da1597720f348b2e1247b1ad9f55cbd3b6812f0a5f08b269bb65039fb1f6074d00f794e857f6dfd01131d299df456af10a8a4943d4d165000d0c80608840492001ab48015581f575c3b8c6ab3d6"
     Transactions:
       type: object
       required:
@@ -4139,6 +4311,15 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Transaction'
+    OkxTransactions:
+      type: object
+      required:
+        - transactions
+      properties:
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/OkxTransaction'
     ConfigProposalSetup:
       type: object
       required:

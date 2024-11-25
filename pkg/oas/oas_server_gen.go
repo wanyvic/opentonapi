@@ -465,6 +465,18 @@ type Handler interface {
 	//
 	// POST /v2/nfts/_bulk
 	GetNftItemsByAddresses(ctx context.Context, req OptGetNftItemsByAddressesReq) (*NftItems, error)
+	// GetOkxEnhancedBlockchainTransaction implements getOkxEnhancedBlockchainTransaction operation.
+	//
+	// Get OKX-enhanced transaction data.
+	//
+	// GET /v2/okx/blockchain/transactions/{transaction_id}
+	GetOkxEnhancedBlockchainTransaction(ctx context.Context, params GetOkxEnhancedBlockchainTransactionParams) (*OkxTransaction, error)
+	// GetOkxEnhancedBlockchainTransactions implements getOkxEnhancedBlockchainTransactions operation.
+	//
+	// Get OKX-enhanced transactions from block.
+	//
+	// GET /v2/okx/blockchain/blocks/{block_id}/transactions
+	GetOkxEnhancedBlockchainTransactions(ctx context.Context, params GetOkxEnhancedBlockchainTransactionsParams) (*OkxTransactions, error)
 	// GetOpenapiJson implements getOpenapiJson operation.
 	//
 	// Get the openapi.json file.

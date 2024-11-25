@@ -232,3 +232,15 @@ func externalAddressFromTlb(address tlb.MsgAddress) *ExternalAddress {
 	}
 	return address.AddrExtern
 }
+
+type EnhancedTransaction struct {
+	*Transaction
+	AdditionalInfo     JettonsAdditionalInfo
+	MasterChainBlockID tongo.BlockID
+}
+
+type EnhancedTransactions struct {
+	Transactions       []*Transaction
+	AdditionalInfo     JettonsAdditionalInfo
+	MasterChainBlockID tongo.BlockID
+}

@@ -219,6 +219,62 @@ func (h *Handler) GetBlockchainTransaction(ctx context.Context, params oas.GetBl
 	return &transaction, nil
 }
 
+func (h *Handler) GetOkxEnhancedBlockchainTransactions(ctx context.Context, params oas.GetOkxEnhancedBlockchainTransactionsParams) (*oas.OkxTransactions, error) {
+	blockID, err := ton.ParseBlockID(params.BlockID)
+	if err != nil {
+		return nil, toError(http.StatusBadRequest, err)
+	}
+	transactions, err := h.storage.GetOkxEnhancedBlockTransactions(ctx, blockID)
+	if errors.Is(err, core.ErrEntityNotFound) {
+		return nil, toError(http.StatusNotFound, err)
+	}
+	if err != nil {
+		return nil, toError(http.StatusInternalServerError, err)
+	}
+	res := oas.OkxTransactions{
+		Transactions: make([]oas.OkxTransaction, 0, len(transactions.Transactions)),
+	}
+	for _, tx := range transactions.Transactions {
+		enhancedTx := core.EnhancedTransaction{
+			Transaction:        tx,
+			AdditionalInfo:     transactions.AdditionalInfo,
+			MasterChainBlockID: transactions.MasterChainBlockID,
+		}
+		res.Transactions = append(res.Transactions, convertOkxEnhancedTransaction(enhancedTx, nil, h.addressBook))
+	}
+	sort.Slice(res.Transactions, func(i, j int) bool {
+		return res.Transactions[i].Lt < res.Transactions[j].Lt
+	})
+	return &res, nil
+}
+
+func (h *Handler) GetOkxEnhancedBlockchainTransaction(ctx context.Context, params oas.GetOkxEnhancedBlockchainTransactionParams) (*oas.OkxTransaction, error) {
+	hash, err := tongo.ParseHash(params.TransactionID)
+	if err != nil {
+		return nil, toError(http.StatusBadRequest, err)
+	}
+	tx, err := h.storage.GetOkxEnhancedTransaction(ctx, hash)
+	if errors.Is(err, core.ErrEntityNotFound) {
+		var txHash *tongo.Bits256
+		txHash, err = h.storage.SearchTransactionByMessageHash(ctx, hash)
+		if errors.Is(err, core.ErrEntityNotFound) {
+			return nil, toError(http.StatusNotFound, err)
+		}
+		if err != nil {
+			return nil, toError(http.StatusInternalServerError, err)
+		}
+		tx, err = h.storage.GetOkxEnhancedTransaction(ctx, *txHash)
+		if errors.Is(err, core.ErrEntityNotFound) {
+			return nil, toError(http.StatusNotFound, err)
+		}
+	}
+	if err != nil {
+		return nil, toError(http.StatusInternalServerError, err)
+	}
+	transaction := convertOkxEnhancedTransaction(*tx, nil, h.addressBook)
+	return &transaction, nil
+}
+
 func (h *Handler) GetBlockchainTransactionByMessageHash(ctx context.Context, params oas.GetBlockchainTransactionByMessageHashParams) (*oas.Transaction, error) {
 	hash, err := tongo.ParseHash(params.MsgID)
 	if err != nil {

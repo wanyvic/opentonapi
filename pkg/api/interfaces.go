@@ -124,6 +124,9 @@ type storage interface {
 	GetAccountInvoicesHistory(ctx context.Context, address tongo.AccountID, limit int, beforeLT *int64) ([]core.InvoicePayment, error)
 	GetInvoice(ctx context.Context, source, destination tongo.AccountID, invoiceID uuid.UUID, currency string) (core.InvoicePayment, error)
 
+	// Okx enhanced methods
+	GetOkxEnhancedTransaction(ctx context.Context, hash tongo.Bits256) (*core.EnhancedTransaction, error)
+	GetOkxEnhancedBlockTransactions(ctx context.Context, id tongo.BlockID) (*core.EnhancedTransactions, error)
 	liteStorageRaw
 }
 
