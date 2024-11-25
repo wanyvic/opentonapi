@@ -2764,9 +2764,9 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				}
 
 				elem = origElem
-			case 'o': // Prefix: "openapi."
+			case 'o': // Prefix: "o"
 				origElem := elem
-				if l := len("openapi."); len(elem) >= l && elem[0:l] == "openapi." {
+				if l := len("o"); len(elem) >= l && elem[0:l] == "o" {
 					elem = elem[l:]
 				} else {
 					break
@@ -2776,45 +2776,150 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					break
 				}
 				switch elem[0] {
-				case 'j': // Prefix: "json"
+				case 'k': // Prefix: "kx/blockchain/"
 					origElem := elem
-					if l := len("json"); len(elem) >= l && elem[0:l] == "json" {
+					if l := len("kx/blockchain/"); len(elem) >= l && elem[0:l] == "kx/blockchain/" {
 						elem = elem[l:]
 					} else {
 						break
 					}
 
 					if len(elem) == 0 {
-						// Leaf node.
-						switch r.Method {
-						case "GET":
-							s.handleGetOpenapiJsonRequest([0]string{}, elemIsEscaped, w, r)
-						default:
-							s.notAllowed(w, r, "GET")
+						break
+					}
+					switch elem[0] {
+					case 'b': // Prefix: "blocks/"
+						origElem := elem
+						if l := len("blocks/"); len(elem) >= l && elem[0:l] == "blocks/" {
+							elem = elem[l:]
+						} else {
+							break
 						}
 
-						return
+						// Param: "block_id"
+						// Match until "/"
+						idx := strings.IndexByte(elem, '/')
+						if idx < 0 {
+							idx = len(elem)
+						}
+						args[0] = elem[:idx]
+						elem = elem[idx:]
+
+						if len(elem) == 0 {
+							break
+						}
+						switch elem[0] {
+						case '/': // Prefix: "/transactions"
+							origElem := elem
+							if l := len("/transactions"); len(elem) >= l && elem[0:l] == "/transactions" {
+								elem = elem[l:]
+							} else {
+								break
+							}
+
+							if len(elem) == 0 {
+								// Leaf node.
+								switch r.Method {
+								case "GET":
+									s.handleGetOkxEnhancedBlockchainTransactionsRequest([1]string{
+										args[0],
+									}, elemIsEscaped, w, r)
+								default:
+									s.notAllowed(w, r, "GET")
+								}
+
+								return
+							}
+
+							elem = origElem
+						}
+
+						elem = origElem
+					case 't': // Prefix: "transactions/"
+						origElem := elem
+						if l := len("transactions/"); len(elem) >= l && elem[0:l] == "transactions/" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						// Param: "transaction_id"
+						// Leaf parameter
+						args[0] = elem
+						elem = ""
+
+						if len(elem) == 0 {
+							// Leaf node.
+							switch r.Method {
+							case "GET":
+								s.handleGetOkxEnhancedBlockchainTransactionRequest([1]string{
+									args[0],
+								}, elemIsEscaped, w, r)
+							default:
+								s.notAllowed(w, r, "GET")
+							}
+
+							return
+						}
+
+						elem = origElem
 					}
 
 					elem = origElem
-				case 'y': // Prefix: "yml"
+				case 'p': // Prefix: "penapi."
 					origElem := elem
-					if l := len("yml"); len(elem) >= l && elem[0:l] == "yml" {
+					if l := len("penapi."); len(elem) >= l && elem[0:l] == "penapi." {
 						elem = elem[l:]
 					} else {
 						break
 					}
 
 					if len(elem) == 0 {
-						// Leaf node.
-						switch r.Method {
-						case "GET":
-							s.handleGetOpenapiYmlRequest([0]string{}, elemIsEscaped, w, r)
-						default:
-							s.notAllowed(w, r, "GET")
+						break
+					}
+					switch elem[0] {
+					case 'j': // Prefix: "json"
+						origElem := elem
+						if l := len("json"); len(elem) >= l && elem[0:l] == "json" {
+							elem = elem[l:]
+						} else {
+							break
 						}
 
-						return
+						if len(elem) == 0 {
+							// Leaf node.
+							switch r.Method {
+							case "GET":
+								s.handleGetOpenapiJsonRequest([0]string{}, elemIsEscaped, w, r)
+							default:
+								s.notAllowed(w, r, "GET")
+							}
+
+							return
+						}
+
+						elem = origElem
+					case 'y': // Prefix: "yml"
+						origElem := elem
+						if l := len("yml"); len(elem) >= l && elem[0:l] == "yml" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						if len(elem) == 0 {
+							// Leaf node.
+							switch r.Method {
+							case "GET":
+								s.handleGetOpenapiYmlRequest([0]string{}, elemIsEscaped, w, r)
+							default:
+								s.notAllowed(w, r, "GET")
+							}
+
+							return
+						}
+
+						elem = origElem
 					}
 
 					elem = origElem
@@ -6406,9 +6511,9 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				}
 
 				elem = origElem
-			case 'o': // Prefix: "openapi."
+			case 'o': // Prefix: "o"
 				origElem := elem
-				if l := len("openapi."); len(elem) >= l && elem[0:l] == "openapi." {
+				if l := len("o"); len(elem) >= l && elem[0:l] == "o" {
 					elem = elem[l:]
 				} else {
 					break
@@ -6418,53 +6523,162 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					break
 				}
 				switch elem[0] {
-				case 'j': // Prefix: "json"
+				case 'k': // Prefix: "kx/blockchain/"
 					origElem := elem
-					if l := len("json"); len(elem) >= l && elem[0:l] == "json" {
+					if l := len("kx/blockchain/"); len(elem) >= l && elem[0:l] == "kx/blockchain/" {
 						elem = elem[l:]
 					} else {
 						break
 					}
 
 					if len(elem) == 0 {
-						switch method {
-						case "GET":
-							// Leaf: GetOpenapiJson
-							r.name = "GetOpenapiJson"
-							r.summary = ""
-							r.operationID = "getOpenapiJson"
-							r.pathPattern = "/v2/openapi.json"
-							r.args = args
-							r.count = 0
-							return r, true
-						default:
-							return
+						break
+					}
+					switch elem[0] {
+					case 'b': // Prefix: "blocks/"
+						origElem := elem
+						if l := len("blocks/"); len(elem) >= l && elem[0:l] == "blocks/" {
+							elem = elem[l:]
+						} else {
+							break
 						}
+
+						// Param: "block_id"
+						// Match until "/"
+						idx := strings.IndexByte(elem, '/')
+						if idx < 0 {
+							idx = len(elem)
+						}
+						args[0] = elem[:idx]
+						elem = elem[idx:]
+
+						if len(elem) == 0 {
+							break
+						}
+						switch elem[0] {
+						case '/': // Prefix: "/transactions"
+							origElem := elem
+							if l := len("/transactions"); len(elem) >= l && elem[0:l] == "/transactions" {
+								elem = elem[l:]
+							} else {
+								break
+							}
+
+							if len(elem) == 0 {
+								switch method {
+								case "GET":
+									// Leaf: GetOkxEnhancedBlockchainTransactions
+									r.name = "GetOkxEnhancedBlockchainTransactions"
+									r.summary = ""
+									r.operationID = "getOkxEnhancedBlockchainTransactions"
+									r.pathPattern = "/v2/okx/blockchain/blocks/{block_id}/transactions"
+									r.args = args
+									r.count = 1
+									return r, true
+								default:
+									return
+								}
+							}
+
+							elem = origElem
+						}
+
+						elem = origElem
+					case 't': // Prefix: "transactions/"
+						origElem := elem
+						if l := len("transactions/"); len(elem) >= l && elem[0:l] == "transactions/" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						// Param: "transaction_id"
+						// Leaf parameter
+						args[0] = elem
+						elem = ""
+
+						if len(elem) == 0 {
+							switch method {
+							case "GET":
+								// Leaf: GetOkxEnhancedBlockchainTransaction
+								r.name = "GetOkxEnhancedBlockchainTransaction"
+								r.summary = ""
+								r.operationID = "getOkxEnhancedBlockchainTransaction"
+								r.pathPattern = "/v2/okx/blockchain/transactions/{transaction_id}"
+								r.args = args
+								r.count = 1
+								return r, true
+							default:
+								return
+							}
+						}
+
+						elem = origElem
 					}
 
 					elem = origElem
-				case 'y': // Prefix: "yml"
+				case 'p': // Prefix: "penapi."
 					origElem := elem
-					if l := len("yml"); len(elem) >= l && elem[0:l] == "yml" {
+					if l := len("penapi."); len(elem) >= l && elem[0:l] == "penapi." {
 						elem = elem[l:]
 					} else {
 						break
 					}
 
 					if len(elem) == 0 {
-						switch method {
-						case "GET":
-							// Leaf: GetOpenapiYml
-							r.name = "GetOpenapiYml"
-							r.summary = ""
-							r.operationID = "getOpenapiYml"
-							r.pathPattern = "/v2/openapi.yml"
-							r.args = args
-							r.count = 0
-							return r, true
-						default:
-							return
+						break
+					}
+					switch elem[0] {
+					case 'j': // Prefix: "json"
+						origElem := elem
+						if l := len("json"); len(elem) >= l && elem[0:l] == "json" {
+							elem = elem[l:]
+						} else {
+							break
 						}
+
+						if len(elem) == 0 {
+							switch method {
+							case "GET":
+								// Leaf: GetOpenapiJson
+								r.name = "GetOpenapiJson"
+								r.summary = ""
+								r.operationID = "getOpenapiJson"
+								r.pathPattern = "/v2/openapi.json"
+								r.args = args
+								r.count = 0
+								return r, true
+							default:
+								return
+							}
+						}
+
+						elem = origElem
+					case 'y': // Prefix: "yml"
+						origElem := elem
+						if l := len("yml"); len(elem) >= l && elem[0:l] == "yml" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						if len(elem) == 0 {
+							switch method {
+							case "GET":
+								// Leaf: GetOpenapiYml
+								r.name = "GetOpenapiYml"
+								r.summary = ""
+								r.operationID = "getOpenapiYml"
+								r.pathPattern = "/v2/openapi.yml"
+								r.args = args
+								r.count = 0
+								return r, true
+							default:
+								return
+							}
+						}
+
+						elem = origElem
 					}
 
 					elem = origElem

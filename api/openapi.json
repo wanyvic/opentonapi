@@ -4849,6 +4849,204 @@
     ],
     "type": "object"
    },
+   "OkxJettonTransferInfo": {
+    "properties": {
+     "jetton": {
+      "example": "0:10C1073837B93FDAAD594284CE8B8EFF7B9CF25427440EB2FC682762E1471365",
+      "format": "address",
+      "type": "string"
+     },
+     "recipient": {
+      "example": "0:10C1073837B93FDAAD594284CE8B8EFF7B9CF25427440EB2FC682762E1471365",
+      "format": "address",
+      "type": "string"
+     },
+     "recipients_wallet": {
+      "example": "0:10C1073837B93FDAAD594284CE8B8EFF7B9CF25427440EB2FC682762E1471365",
+      "format": "address",
+      "type": "string"
+     },
+     "sender": {
+      "example": "0:10C1073837B93FDAAD594284CE8B8EFF7B9CF25427440EB2FC682762E1471365",
+      "format": "address",
+      "type": "string"
+     },
+     "senders_wallet": {
+      "example": "0:10C1073837B93FDAAD594284CE8B8EFF7B9CF25427440EB2FC682762E1471365",
+      "format": "address",
+      "type": "string"
+     }
+    },
+    "required": [
+     "sender",
+     "senders_wallet",
+     "recipient",
+     "recipients_wallet",
+     "jetton"
+    ],
+    "type": "object"
+   },
+   "OkxMessage": {
+    "allOf": [
+     {
+      "$ref": "#/components/schemas/Message"
+     },
+     {
+      "properties": {
+       "jetton_transfer_info": {
+        "$ref": "#/components/schemas/OkxJettonTransferInfo"
+       }
+      },
+      "type": "object"
+     }
+    ]
+   },
+   "OkxTransaction": {
+    "properties": {
+     "aborted": {
+      "example": true,
+      "type": "boolean"
+     },
+     "account": {
+      "$ref": "#/components/schemas/AccountAddress"
+     },
+     "action_phase": {
+      "$ref": "#/components/schemas/ActionPhase"
+     },
+     "block": {
+      "example": "(-1,4234234,8000000000000000)",
+      "type": "string"
+     },
+     "bounce_phase": {
+      "$ref": "#/components/schemas/BouncePhaseType"
+     },
+     "compute_phase": {
+      "$ref": "#/components/schemas/ComputePhase"
+     },
+     "credit_phase": {
+      "$ref": "#/components/schemas/CreditPhase"
+     },
+     "destroyed": {
+      "example": true,
+      "type": "boolean"
+     },
+     "end_balance": {
+      "example": 25713146000001,
+      "format": "int64",
+      "type": "integer",
+      "x-js-format": "bigint"
+     },
+     "end_status": {
+      "$ref": "#/components/schemas/AccountStatus"
+     },
+     "hash": {
+      "example": "55e8809519cd3c49098c9ee45afdafcea7a894a74d0f628d94a115a50e045122",
+      "type": "string"
+     },
+     "in_msg": {
+      "$ref": "#/components/schemas/OkxMessage"
+     },
+     "lt": {
+      "example": 25713146000001,
+      "format": "int64",
+      "type": "integer",
+      "x-js-format": "bigint"
+     },
+     "masterchain_block": {
+      "example": "(-1,4234234,8000000000000000)",
+      "type": "string"
+     },
+     "orig_status": {
+      "$ref": "#/components/schemas/AccountStatus"
+     },
+     "out_msgs": {
+      "items": {
+       "$ref": "#/components/schemas/OkxMessage"
+      },
+      "type": "array"
+     },
+     "prev_trans_hash": {
+      "example": "55e8809519cd3c49098c9ee45afdafcea7a894a74d0f628d94a115a50e045122",
+      "type": "string"
+     },
+     "prev_trans_lt": {
+      "example": 25713146000001,
+      "format": "int64",
+      "type": "integer",
+      "x-js-format": "bigint"
+     },
+     "raw": {
+      "description": "hex encoded boc with raw transaction",
+      "example": "b5ee9c72410206010001380003b372cf3b5b8c891e517c9addbda1c0386a09ccacbb0e3faf630b51cfc8152325acb00002ac5795c0e41fdf79135cb7da03cc623b165d614b562a51eeccd8a5e097f405abf6b37f4e73000002ac5629732c1666887ed000144030480102030101a004008272abc8f2971aa4404ac6da1597720f348b2e1247b1ad9f55cbd3b6812f0a5f08b269bb65039fb1f6074d00f794e857f6dfd01131d299df456af10a8a4943d4d165000d0c80608840492001ab48015581f575c3b8c6ab3d6",
+      "format": "cell",
+      "type": "string"
+     },
+     "state_update_new": {
+      "example": "55e8809519cd3c49098c9ee45afdafcea7a894a74d0f628d94a115a50e045122",
+      "type": "string"
+     },
+     "state_update_old": {
+      "example": "55e8809519cd3c49098c9ee45afdafcea7a894a74d0f628d94a115a50e045122",
+      "type": "string"
+     },
+     "storage_phase": {
+      "$ref": "#/components/schemas/StoragePhase"
+     },
+     "success": {
+      "example": true,
+      "type": "boolean"
+     },
+     "total_fees": {
+      "example": 25713146000001,
+      "format": "int64",
+      "type": "integer",
+      "x-js-format": "bigint"
+     },
+     "transaction_type": {
+      "$ref": "#/components/schemas/TransactionType"
+     },
+     "utime": {
+      "example": 1645544908,
+      "format": "int64",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "hash",
+     "lt",
+     "account",
+     "end_balance",
+     "success",
+     "utime",
+     "orig_status",
+     "end_status",
+     "total_fees",
+     "transaction_type",
+     "state_update_old",
+     "state_update_new",
+     "out_msgs",
+     "block",
+     "masterchain_block",
+     "aborted",
+     "destroyed",
+     "raw"
+    ],
+    "type": "object"
+   },
+   "OkxTransactions": {
+    "properties": {
+     "transactions": {
+      "items": {
+       "$ref": "#/components/schemas/OkxTransaction"
+      },
+      "type": "array"
+     }
+    },
+    "required": [
+     "transactions"
+    ],
+    "type": "object"
+   },
    "Oracle": {
     "properties": {
      "address": {
@@ -10139,6 +10337,64 @@
     },
     "tags": [
      "NFT"
+    ]
+   }
+  },
+  "/v2/okx/blockchain/blocks/{block_id}/transactions": {
+   "get": {
+    "description": "Get OKX-enhanced transactions from block",
+    "operationId": "getOkxEnhancedBlockchainTransactions",
+    "parameters": [
+     {
+      "$ref": "#/components/parameters/blockchainBlockIDParameter"
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/OkxTransactions"
+        }
+       }
+      },
+      "description": "blockchain block transactions"
+     },
+     "default": {
+      "$ref": "#/components/responses/Error"
+     }
+    },
+    "tags": [
+     "Blockchain"
+    ]
+   }
+  },
+  "/v2/okx/blockchain/transactions/{transaction_id}": {
+   "get": {
+    "description": "Get OKX-enhanced transaction data",
+    "operationId": "getOkxEnhancedBlockchainTransaction",
+    "parameters": [
+     {
+      "$ref": "#/components/parameters/transactionIDParameter"
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/OkxTransaction"
+        }
+       }
+      },
+      "description": "blockchain transaction"
+     },
+     "default": {
+      "$ref": "#/components/responses/Error"
+     }
+    },
+    "tags": [
+     "Blockchain"
     ]
    }
   },
