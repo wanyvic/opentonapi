@@ -9083,6 +9083,138 @@ func decodeGetNftItemByAddressParams(args [1]string, argsEscaped bool, r *http.R
 	return params, nil
 }
 
+// GetOkxEnhancedBlockchainTransactionParams is parameters of getOkxEnhancedBlockchainTransaction operation.
+type GetOkxEnhancedBlockchainTransactionParams struct {
+	// Transaction ID.
+	TransactionID string
+}
+
+func unpackGetOkxEnhancedBlockchainTransactionParams(packed middleware.Parameters) (params GetOkxEnhancedBlockchainTransactionParams) {
+	{
+		key := middleware.ParameterKey{
+			Name: "transaction_id",
+			In:   "path",
+		}
+		params.TransactionID = packed[key].(string)
+	}
+	return params
+}
+
+func decodeGetOkxEnhancedBlockchainTransactionParams(args [1]string, argsEscaped bool, r *http.Request) (params GetOkxEnhancedBlockchainTransactionParams, _ error) {
+	// Decode path: transaction_id.
+	if err := func() error {
+		param := args[0]
+		if argsEscaped {
+			unescaped, err := url.PathUnescape(args[0])
+			if err != nil {
+				return errors.Wrap(err, "unescape path")
+			}
+			param = unescaped
+		}
+		if len(param) > 0 {
+			d := uri.NewPathDecoder(uri.PathDecoderConfig{
+				Param:   "transaction_id",
+				Value:   param,
+				Style:   uri.PathStyleSimple,
+				Explode: false,
+			})
+
+			if err := func() error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToString(val)
+				if err != nil {
+					return err
+				}
+
+				params.TransactionID = c
+				return nil
+			}(); err != nil {
+				return err
+			}
+		} else {
+			return validate.ErrFieldRequired
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "transaction_id",
+			In:   "path",
+			Err:  err,
+		}
+	}
+	return params, nil
+}
+
+// GetOkxEnhancedBlockchainTransactionsParams is parameters of getOkxEnhancedBlockchainTransactions operation.
+type GetOkxEnhancedBlockchainTransactionsParams struct {
+	// Block ID.
+	BlockID string
+}
+
+func unpackGetOkxEnhancedBlockchainTransactionsParams(packed middleware.Parameters) (params GetOkxEnhancedBlockchainTransactionsParams) {
+	{
+		key := middleware.ParameterKey{
+			Name: "block_id",
+			In:   "path",
+		}
+		params.BlockID = packed[key].(string)
+	}
+	return params
+}
+
+func decodeGetOkxEnhancedBlockchainTransactionsParams(args [1]string, argsEscaped bool, r *http.Request) (params GetOkxEnhancedBlockchainTransactionsParams, _ error) {
+	// Decode path: block_id.
+	if err := func() error {
+		param := args[0]
+		if argsEscaped {
+			unescaped, err := url.PathUnescape(args[0])
+			if err != nil {
+				return errors.Wrap(err, "unescape path")
+			}
+			param = unescaped
+		}
+		if len(param) > 0 {
+			d := uri.NewPathDecoder(uri.PathDecoderConfig{
+				Param:   "block_id",
+				Value:   param,
+				Style:   uri.PathStyleSimple,
+				Explode: false,
+			})
+
+			if err := func() error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToString(val)
+				if err != nil {
+					return err
+				}
+
+				params.BlockID = c
+				return nil
+			}(); err != nil {
+				return err
+			}
+		} else {
+			return validate.ErrFieldRequired
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "block_id",
+			In:   "path",
+			Err:  err,
+		}
+	}
+	return params, nil
+}
+
 // GetRatesParams is parameters of getRates operation.
 type GetRatesParams struct {
 	// Accept ton and jetton master addresses, separated by commas.

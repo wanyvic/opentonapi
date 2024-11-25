@@ -9788,6 +9788,634 @@ func (s *NftPurchaseActionAuctionType) UnmarshalText(data []byte) error {
 	}
 }
 
+// Ref: #/components/schemas/OkxJettonTransferInfo
+type OkxJettonTransferInfo struct {
+	Sender           string `json:"sender"`
+	Recipient        string `json:"recipient"`
+	SendersWallet    string `json:"senders_wallet"`
+	RecipientsWallet string `json:"recipients_wallet"`
+	Jetton           string `json:"jetton"`
+}
+
+// GetSender returns the value of Sender.
+func (s *OkxJettonTransferInfo) GetSender() string {
+	return s.Sender
+}
+
+// GetRecipient returns the value of Recipient.
+func (s *OkxJettonTransferInfo) GetRecipient() string {
+	return s.Recipient
+}
+
+// GetSendersWallet returns the value of SendersWallet.
+func (s *OkxJettonTransferInfo) GetSendersWallet() string {
+	return s.SendersWallet
+}
+
+// GetRecipientsWallet returns the value of RecipientsWallet.
+func (s *OkxJettonTransferInfo) GetRecipientsWallet() string {
+	return s.RecipientsWallet
+}
+
+// GetJetton returns the value of Jetton.
+func (s *OkxJettonTransferInfo) GetJetton() string {
+	return s.Jetton
+}
+
+// SetSender sets the value of Sender.
+func (s *OkxJettonTransferInfo) SetSender(val string) {
+	s.Sender = val
+}
+
+// SetRecipient sets the value of Recipient.
+func (s *OkxJettonTransferInfo) SetRecipient(val string) {
+	s.Recipient = val
+}
+
+// SetSendersWallet sets the value of SendersWallet.
+func (s *OkxJettonTransferInfo) SetSendersWallet(val string) {
+	s.SendersWallet = val
+}
+
+// SetRecipientsWallet sets the value of RecipientsWallet.
+func (s *OkxJettonTransferInfo) SetRecipientsWallet(val string) {
+	s.RecipientsWallet = val
+}
+
+// SetJetton sets the value of Jetton.
+func (s *OkxJettonTransferInfo) SetJetton(val string) {
+	s.Jetton = val
+}
+
+// Merged schema.
+// Ref: #/components/schemas/OkxMessage
+type OkxMessage struct {
+	MsgType     OkxMessageMsgType `json:"msg_type"`
+	CreatedLt   int64             `json:"created_lt"`
+	IhrDisabled bool              `json:"ihr_disabled"`
+	Bounce      bool              `json:"bounce"`
+	Bounced     bool              `json:"bounced"`
+	Value       int64             `json:"value"`
+	FwdFee      int64             `json:"fwd_fee"`
+	IhrFee      int64             `json:"ihr_fee"`
+	Destination OptAccountAddress `json:"destination"`
+	Source      OptAccountAddress `json:"source"`
+	ImportFee   int64             `json:"import_fee"`
+	CreatedAt   int64             `json:"created_at"`
+	OpCode      OptString         `json:"op_code"`
+	Init        OptStateInit      `json:"init"`
+	Hash        string            `json:"hash"`
+	// Hex-encoded BoC with raw message body.
+	RawBody            OptString                `json:"raw_body"`
+	DecodedOpName      OptString                `json:"decoded_op_name"`
+	DecodedBody        jx.Raw                   `json:"decoded_body"`
+	JettonTransferInfo OptOkxJettonTransferInfo `json:"jetton_transfer_info"`
+}
+
+// GetMsgType returns the value of MsgType.
+func (s *OkxMessage) GetMsgType() OkxMessageMsgType {
+	return s.MsgType
+}
+
+// GetCreatedLt returns the value of CreatedLt.
+func (s *OkxMessage) GetCreatedLt() int64 {
+	return s.CreatedLt
+}
+
+// GetIhrDisabled returns the value of IhrDisabled.
+func (s *OkxMessage) GetIhrDisabled() bool {
+	return s.IhrDisabled
+}
+
+// GetBounce returns the value of Bounce.
+func (s *OkxMessage) GetBounce() bool {
+	return s.Bounce
+}
+
+// GetBounced returns the value of Bounced.
+func (s *OkxMessage) GetBounced() bool {
+	return s.Bounced
+}
+
+// GetValue returns the value of Value.
+func (s *OkxMessage) GetValue() int64 {
+	return s.Value
+}
+
+// GetFwdFee returns the value of FwdFee.
+func (s *OkxMessage) GetFwdFee() int64 {
+	return s.FwdFee
+}
+
+// GetIhrFee returns the value of IhrFee.
+func (s *OkxMessage) GetIhrFee() int64 {
+	return s.IhrFee
+}
+
+// GetDestination returns the value of Destination.
+func (s *OkxMessage) GetDestination() OptAccountAddress {
+	return s.Destination
+}
+
+// GetSource returns the value of Source.
+func (s *OkxMessage) GetSource() OptAccountAddress {
+	return s.Source
+}
+
+// GetImportFee returns the value of ImportFee.
+func (s *OkxMessage) GetImportFee() int64 {
+	return s.ImportFee
+}
+
+// GetCreatedAt returns the value of CreatedAt.
+func (s *OkxMessage) GetCreatedAt() int64 {
+	return s.CreatedAt
+}
+
+// GetOpCode returns the value of OpCode.
+func (s *OkxMessage) GetOpCode() OptString {
+	return s.OpCode
+}
+
+// GetInit returns the value of Init.
+func (s *OkxMessage) GetInit() OptStateInit {
+	return s.Init
+}
+
+// GetHash returns the value of Hash.
+func (s *OkxMessage) GetHash() string {
+	return s.Hash
+}
+
+// GetRawBody returns the value of RawBody.
+func (s *OkxMessage) GetRawBody() OptString {
+	return s.RawBody
+}
+
+// GetDecodedOpName returns the value of DecodedOpName.
+func (s *OkxMessage) GetDecodedOpName() OptString {
+	return s.DecodedOpName
+}
+
+// GetDecodedBody returns the value of DecodedBody.
+func (s *OkxMessage) GetDecodedBody() jx.Raw {
+	return s.DecodedBody
+}
+
+// GetJettonTransferInfo returns the value of JettonTransferInfo.
+func (s *OkxMessage) GetJettonTransferInfo() OptOkxJettonTransferInfo {
+	return s.JettonTransferInfo
+}
+
+// SetMsgType sets the value of MsgType.
+func (s *OkxMessage) SetMsgType(val OkxMessageMsgType) {
+	s.MsgType = val
+}
+
+// SetCreatedLt sets the value of CreatedLt.
+func (s *OkxMessage) SetCreatedLt(val int64) {
+	s.CreatedLt = val
+}
+
+// SetIhrDisabled sets the value of IhrDisabled.
+func (s *OkxMessage) SetIhrDisabled(val bool) {
+	s.IhrDisabled = val
+}
+
+// SetBounce sets the value of Bounce.
+func (s *OkxMessage) SetBounce(val bool) {
+	s.Bounce = val
+}
+
+// SetBounced sets the value of Bounced.
+func (s *OkxMessage) SetBounced(val bool) {
+	s.Bounced = val
+}
+
+// SetValue sets the value of Value.
+func (s *OkxMessage) SetValue(val int64) {
+	s.Value = val
+}
+
+// SetFwdFee sets the value of FwdFee.
+func (s *OkxMessage) SetFwdFee(val int64) {
+	s.FwdFee = val
+}
+
+// SetIhrFee sets the value of IhrFee.
+func (s *OkxMessage) SetIhrFee(val int64) {
+	s.IhrFee = val
+}
+
+// SetDestination sets the value of Destination.
+func (s *OkxMessage) SetDestination(val OptAccountAddress) {
+	s.Destination = val
+}
+
+// SetSource sets the value of Source.
+func (s *OkxMessage) SetSource(val OptAccountAddress) {
+	s.Source = val
+}
+
+// SetImportFee sets the value of ImportFee.
+func (s *OkxMessage) SetImportFee(val int64) {
+	s.ImportFee = val
+}
+
+// SetCreatedAt sets the value of CreatedAt.
+func (s *OkxMessage) SetCreatedAt(val int64) {
+	s.CreatedAt = val
+}
+
+// SetOpCode sets the value of OpCode.
+func (s *OkxMessage) SetOpCode(val OptString) {
+	s.OpCode = val
+}
+
+// SetInit sets the value of Init.
+func (s *OkxMessage) SetInit(val OptStateInit) {
+	s.Init = val
+}
+
+// SetHash sets the value of Hash.
+func (s *OkxMessage) SetHash(val string) {
+	s.Hash = val
+}
+
+// SetRawBody sets the value of RawBody.
+func (s *OkxMessage) SetRawBody(val OptString) {
+	s.RawBody = val
+}
+
+// SetDecodedOpName sets the value of DecodedOpName.
+func (s *OkxMessage) SetDecodedOpName(val OptString) {
+	s.DecodedOpName = val
+}
+
+// SetDecodedBody sets the value of DecodedBody.
+func (s *OkxMessage) SetDecodedBody(val jx.Raw) {
+	s.DecodedBody = val
+}
+
+// SetJettonTransferInfo sets the value of JettonTransferInfo.
+func (s *OkxMessage) SetJettonTransferInfo(val OptOkxJettonTransferInfo) {
+	s.JettonTransferInfo = val
+}
+
+type OkxMessageMsgType string
+
+const (
+	OkxMessageMsgTypeIntMsg    OkxMessageMsgType = "int_msg"
+	OkxMessageMsgTypeExtInMsg  OkxMessageMsgType = "ext_in_msg"
+	OkxMessageMsgTypeExtOutMsg OkxMessageMsgType = "ext_out_msg"
+)
+
+// AllValues returns all OkxMessageMsgType values.
+func (OkxMessageMsgType) AllValues() []OkxMessageMsgType {
+	return []OkxMessageMsgType{
+		OkxMessageMsgTypeIntMsg,
+		OkxMessageMsgTypeExtInMsg,
+		OkxMessageMsgTypeExtOutMsg,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s OkxMessageMsgType) MarshalText() ([]byte, error) {
+	switch s {
+	case OkxMessageMsgTypeIntMsg:
+		return []byte(s), nil
+	case OkxMessageMsgTypeExtInMsg:
+		return []byte(s), nil
+	case OkxMessageMsgTypeExtOutMsg:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *OkxMessageMsgType) UnmarshalText(data []byte) error {
+	switch OkxMessageMsgType(data) {
+	case OkxMessageMsgTypeIntMsg:
+		*s = OkxMessageMsgTypeIntMsg
+		return nil
+	case OkxMessageMsgTypeExtInMsg:
+		*s = OkxMessageMsgTypeExtInMsg
+		return nil
+	case OkxMessageMsgTypeExtOutMsg:
+		*s = OkxMessageMsgTypeExtOutMsg
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
+}
+
+// Ref: #/components/schemas/OkxTransaction
+type OkxTransaction struct {
+	Hash             string             `json:"hash"`
+	Lt               int64              `json:"lt"`
+	Account          AccountAddress     `json:"account"`
+	Success          bool               `json:"success"`
+	Utime            int64              `json:"utime"`
+	OrigStatus       AccountStatus      `json:"orig_status"`
+	EndStatus        AccountStatus      `json:"end_status"`
+	TotalFees        int64              `json:"total_fees"`
+	EndBalance       int64              `json:"end_balance"`
+	TransactionType  TransactionType    `json:"transaction_type"`
+	StateUpdateOld   string             `json:"state_update_old"`
+	StateUpdateNew   string             `json:"state_update_new"`
+	InMsg            OptOkxMessage      `json:"in_msg"`
+	OutMsgs          []OkxMessage       `json:"out_msgs"`
+	Block            string             `json:"block"`
+	MasterchainBlock string             `json:"masterchain_block"`
+	PrevTransHash    OptString          `json:"prev_trans_hash"`
+	PrevTransLt      OptInt64           `json:"prev_trans_lt"`
+	ComputePhase     OptComputePhase    `json:"compute_phase"`
+	StoragePhase     OptStoragePhase    `json:"storage_phase"`
+	CreditPhase      OptCreditPhase     `json:"credit_phase"`
+	ActionPhase      OptActionPhase     `json:"action_phase"`
+	BouncePhase      OptBouncePhaseType `json:"bounce_phase"`
+	Aborted          bool               `json:"aborted"`
+	Destroyed        bool               `json:"destroyed"`
+	// Hex encoded boc with raw transaction.
+	Raw string `json:"raw"`
+}
+
+// GetHash returns the value of Hash.
+func (s *OkxTransaction) GetHash() string {
+	return s.Hash
+}
+
+// GetLt returns the value of Lt.
+func (s *OkxTransaction) GetLt() int64 {
+	return s.Lt
+}
+
+// GetAccount returns the value of Account.
+func (s *OkxTransaction) GetAccount() AccountAddress {
+	return s.Account
+}
+
+// GetSuccess returns the value of Success.
+func (s *OkxTransaction) GetSuccess() bool {
+	return s.Success
+}
+
+// GetUtime returns the value of Utime.
+func (s *OkxTransaction) GetUtime() int64 {
+	return s.Utime
+}
+
+// GetOrigStatus returns the value of OrigStatus.
+func (s *OkxTransaction) GetOrigStatus() AccountStatus {
+	return s.OrigStatus
+}
+
+// GetEndStatus returns the value of EndStatus.
+func (s *OkxTransaction) GetEndStatus() AccountStatus {
+	return s.EndStatus
+}
+
+// GetTotalFees returns the value of TotalFees.
+func (s *OkxTransaction) GetTotalFees() int64 {
+	return s.TotalFees
+}
+
+// GetEndBalance returns the value of EndBalance.
+func (s *OkxTransaction) GetEndBalance() int64 {
+	return s.EndBalance
+}
+
+// GetTransactionType returns the value of TransactionType.
+func (s *OkxTransaction) GetTransactionType() TransactionType {
+	return s.TransactionType
+}
+
+// GetStateUpdateOld returns the value of StateUpdateOld.
+func (s *OkxTransaction) GetStateUpdateOld() string {
+	return s.StateUpdateOld
+}
+
+// GetStateUpdateNew returns the value of StateUpdateNew.
+func (s *OkxTransaction) GetStateUpdateNew() string {
+	return s.StateUpdateNew
+}
+
+// GetInMsg returns the value of InMsg.
+func (s *OkxTransaction) GetInMsg() OptOkxMessage {
+	return s.InMsg
+}
+
+// GetOutMsgs returns the value of OutMsgs.
+func (s *OkxTransaction) GetOutMsgs() []OkxMessage {
+	return s.OutMsgs
+}
+
+// GetBlock returns the value of Block.
+func (s *OkxTransaction) GetBlock() string {
+	return s.Block
+}
+
+// GetMasterchainBlock returns the value of MasterchainBlock.
+func (s *OkxTransaction) GetMasterchainBlock() string {
+	return s.MasterchainBlock
+}
+
+// GetPrevTransHash returns the value of PrevTransHash.
+func (s *OkxTransaction) GetPrevTransHash() OptString {
+	return s.PrevTransHash
+}
+
+// GetPrevTransLt returns the value of PrevTransLt.
+func (s *OkxTransaction) GetPrevTransLt() OptInt64 {
+	return s.PrevTransLt
+}
+
+// GetComputePhase returns the value of ComputePhase.
+func (s *OkxTransaction) GetComputePhase() OptComputePhase {
+	return s.ComputePhase
+}
+
+// GetStoragePhase returns the value of StoragePhase.
+func (s *OkxTransaction) GetStoragePhase() OptStoragePhase {
+	return s.StoragePhase
+}
+
+// GetCreditPhase returns the value of CreditPhase.
+func (s *OkxTransaction) GetCreditPhase() OptCreditPhase {
+	return s.CreditPhase
+}
+
+// GetActionPhase returns the value of ActionPhase.
+func (s *OkxTransaction) GetActionPhase() OptActionPhase {
+	return s.ActionPhase
+}
+
+// GetBouncePhase returns the value of BouncePhase.
+func (s *OkxTransaction) GetBouncePhase() OptBouncePhaseType {
+	return s.BouncePhase
+}
+
+// GetAborted returns the value of Aborted.
+func (s *OkxTransaction) GetAborted() bool {
+	return s.Aborted
+}
+
+// GetDestroyed returns the value of Destroyed.
+func (s *OkxTransaction) GetDestroyed() bool {
+	return s.Destroyed
+}
+
+// GetRaw returns the value of Raw.
+func (s *OkxTransaction) GetRaw() string {
+	return s.Raw
+}
+
+// SetHash sets the value of Hash.
+func (s *OkxTransaction) SetHash(val string) {
+	s.Hash = val
+}
+
+// SetLt sets the value of Lt.
+func (s *OkxTransaction) SetLt(val int64) {
+	s.Lt = val
+}
+
+// SetAccount sets the value of Account.
+func (s *OkxTransaction) SetAccount(val AccountAddress) {
+	s.Account = val
+}
+
+// SetSuccess sets the value of Success.
+func (s *OkxTransaction) SetSuccess(val bool) {
+	s.Success = val
+}
+
+// SetUtime sets the value of Utime.
+func (s *OkxTransaction) SetUtime(val int64) {
+	s.Utime = val
+}
+
+// SetOrigStatus sets the value of OrigStatus.
+func (s *OkxTransaction) SetOrigStatus(val AccountStatus) {
+	s.OrigStatus = val
+}
+
+// SetEndStatus sets the value of EndStatus.
+func (s *OkxTransaction) SetEndStatus(val AccountStatus) {
+	s.EndStatus = val
+}
+
+// SetTotalFees sets the value of TotalFees.
+func (s *OkxTransaction) SetTotalFees(val int64) {
+	s.TotalFees = val
+}
+
+// SetEndBalance sets the value of EndBalance.
+func (s *OkxTransaction) SetEndBalance(val int64) {
+	s.EndBalance = val
+}
+
+// SetTransactionType sets the value of TransactionType.
+func (s *OkxTransaction) SetTransactionType(val TransactionType) {
+	s.TransactionType = val
+}
+
+// SetStateUpdateOld sets the value of StateUpdateOld.
+func (s *OkxTransaction) SetStateUpdateOld(val string) {
+	s.StateUpdateOld = val
+}
+
+// SetStateUpdateNew sets the value of StateUpdateNew.
+func (s *OkxTransaction) SetStateUpdateNew(val string) {
+	s.StateUpdateNew = val
+}
+
+// SetInMsg sets the value of InMsg.
+func (s *OkxTransaction) SetInMsg(val OptOkxMessage) {
+	s.InMsg = val
+}
+
+// SetOutMsgs sets the value of OutMsgs.
+func (s *OkxTransaction) SetOutMsgs(val []OkxMessage) {
+	s.OutMsgs = val
+}
+
+// SetBlock sets the value of Block.
+func (s *OkxTransaction) SetBlock(val string) {
+	s.Block = val
+}
+
+// SetMasterchainBlock sets the value of MasterchainBlock.
+func (s *OkxTransaction) SetMasterchainBlock(val string) {
+	s.MasterchainBlock = val
+}
+
+// SetPrevTransHash sets the value of PrevTransHash.
+func (s *OkxTransaction) SetPrevTransHash(val OptString) {
+	s.PrevTransHash = val
+}
+
+// SetPrevTransLt sets the value of PrevTransLt.
+func (s *OkxTransaction) SetPrevTransLt(val OptInt64) {
+	s.PrevTransLt = val
+}
+
+// SetComputePhase sets the value of ComputePhase.
+func (s *OkxTransaction) SetComputePhase(val OptComputePhase) {
+	s.ComputePhase = val
+}
+
+// SetStoragePhase sets the value of StoragePhase.
+func (s *OkxTransaction) SetStoragePhase(val OptStoragePhase) {
+	s.StoragePhase = val
+}
+
+// SetCreditPhase sets the value of CreditPhase.
+func (s *OkxTransaction) SetCreditPhase(val OptCreditPhase) {
+	s.CreditPhase = val
+}
+
+// SetActionPhase sets the value of ActionPhase.
+func (s *OkxTransaction) SetActionPhase(val OptActionPhase) {
+	s.ActionPhase = val
+}
+
+// SetBouncePhase sets the value of BouncePhase.
+func (s *OkxTransaction) SetBouncePhase(val OptBouncePhaseType) {
+	s.BouncePhase = val
+}
+
+// SetAborted sets the value of Aborted.
+func (s *OkxTransaction) SetAborted(val bool) {
+	s.Aborted = val
+}
+
+// SetDestroyed sets the value of Destroyed.
+func (s *OkxTransaction) SetDestroyed(val bool) {
+	s.Destroyed = val
+}
+
+// SetRaw sets the value of Raw.
+func (s *OkxTransaction) SetRaw(val string) {
+	s.Raw = val
+}
+
+// Ref: #/components/schemas/OkxTransactions
+type OkxTransactions struct {
+	Transactions []OkxTransaction `json:"transactions"`
+}
+
+// GetTransactions returns the value of Transactions.
+func (s *OkxTransactions) GetTransactions() []OkxTransaction {
+	return s.Transactions
+}
+
+// SetTransactions sets the value of Transactions.
+func (s *OkxTransactions) SetTransactions(val []OkxTransaction) {
+	s.Transactions = val
+}
+
 // NewOptAccountAddress returns new OptAccountAddress with value set to v.
 func NewOptAccountAddress(v AccountAddress) OptAccountAddress {
 	return OptAccountAddress{
@@ -13370,6 +13998,98 @@ func (o OptNftPurchaseAction) Get() (v NftPurchaseAction, ok bool) {
 
 // Or returns value if set, or given parameter if does not.
 func (o OptNftPurchaseAction) Or(d NftPurchaseAction) NftPurchaseAction {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptOkxJettonTransferInfo returns new OptOkxJettonTransferInfo with value set to v.
+func NewOptOkxJettonTransferInfo(v OkxJettonTransferInfo) OptOkxJettonTransferInfo {
+	return OptOkxJettonTransferInfo{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptOkxJettonTransferInfo is optional OkxJettonTransferInfo.
+type OptOkxJettonTransferInfo struct {
+	Value OkxJettonTransferInfo
+	Set   bool
+}
+
+// IsSet returns true if OptOkxJettonTransferInfo was set.
+func (o OptOkxJettonTransferInfo) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptOkxJettonTransferInfo) Reset() {
+	var v OkxJettonTransferInfo
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptOkxJettonTransferInfo) SetTo(v OkxJettonTransferInfo) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptOkxJettonTransferInfo) Get() (v OkxJettonTransferInfo, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptOkxJettonTransferInfo) Or(d OkxJettonTransferInfo) OkxJettonTransferInfo {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptOkxMessage returns new OptOkxMessage with value set to v.
+func NewOptOkxMessage(v OkxMessage) OptOkxMessage {
+	return OptOkxMessage{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptOkxMessage is optional OkxMessage.
+type OptOkxMessage struct {
+	Value OkxMessage
+	Set   bool
+}
+
+// IsSet returns true if OptOkxMessage was set.
+func (o OptOkxMessage) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptOkxMessage) Reset() {
+	var v OkxMessage
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptOkxMessage) SetTo(v OkxMessage) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptOkxMessage) Get() (v OkxMessage, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptOkxMessage) Or(d OkxMessage) OkxMessage {
 	if v, ok := o.Get(); ok {
 		return v
 	}

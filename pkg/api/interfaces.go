@@ -110,6 +110,9 @@ type storage interface {
 	GetAccountMultisigs(ctx context.Context, accountID ton.AccountID) ([]core.Multisig, error)
 	GetMultisigByID(ctx context.Context, accountID ton.AccountID) (*core.Multisig, error)
 
+	// Okx enhanced methods
+	GetOkxEnhancedTransaction(ctx context.Context, hash tongo.Bits256) (*core.EnhancedTransaction, error)
+	GetOkxEnhancedBlockTransactions(ctx context.Context, id tongo.BlockID) (*core.EnhancedTransactions, error)
 	liteStorageRaw
 }
 

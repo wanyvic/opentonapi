@@ -28796,6 +28796,1247 @@ func (s *NftPurchaseActionAuctionType) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
+// Encode implements json.Marshaler.
+func (s *OkxJettonTransferInfo) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *OkxJettonTransferInfo) encodeFields(e *jx.Encoder) {
+	{
+		e.FieldStart("sender")
+		e.Str(s.Sender)
+	}
+	{
+		e.FieldStart("recipient")
+		e.Str(s.Recipient)
+	}
+	{
+		e.FieldStart("senders_wallet")
+		e.Str(s.SendersWallet)
+	}
+	{
+		e.FieldStart("recipients_wallet")
+		e.Str(s.RecipientsWallet)
+	}
+	{
+		e.FieldStart("jetton")
+		e.Str(s.Jetton)
+	}
+}
+
+var jsonFieldsNameOfOkxJettonTransferInfo = [5]string{
+	0: "sender",
+	1: "recipient",
+	2: "senders_wallet",
+	3: "recipients_wallet",
+	4: "jetton",
+}
+
+// Decode decodes OkxJettonTransferInfo from json.
+func (s *OkxJettonTransferInfo) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode OkxJettonTransferInfo to nil")
+	}
+	var requiredBitSet [1]uint8
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "sender":
+			requiredBitSet[0] |= 1 << 0
+			if err := func() error {
+				v, err := d.Str()
+				s.Sender = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"sender\"")
+			}
+		case "recipient":
+			requiredBitSet[0] |= 1 << 1
+			if err := func() error {
+				v, err := d.Str()
+				s.Recipient = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"recipient\"")
+			}
+		case "senders_wallet":
+			requiredBitSet[0] |= 1 << 2
+			if err := func() error {
+				v, err := d.Str()
+				s.SendersWallet = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"senders_wallet\"")
+			}
+		case "recipients_wallet":
+			requiredBitSet[0] |= 1 << 3
+			if err := func() error {
+				v, err := d.Str()
+				s.RecipientsWallet = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"recipients_wallet\"")
+			}
+		case "jetton":
+			requiredBitSet[0] |= 1 << 4
+			if err := func() error {
+				v, err := d.Str()
+				s.Jetton = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"jetton\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode OkxJettonTransferInfo")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [1]uint8{
+		0b00011111,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfOkxJettonTransferInfo) {
+					name = jsonFieldsNameOfOkxJettonTransferInfo[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *OkxJettonTransferInfo) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OkxJettonTransferInfo) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *OkxMessage) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *OkxMessage) encodeFields(e *jx.Encoder) {
+	{
+		e.FieldStart("msg_type")
+		s.MsgType.Encode(e)
+	}
+	{
+		e.FieldStart("created_lt")
+		e.Int64(s.CreatedLt)
+	}
+	{
+		e.FieldStart("ihr_disabled")
+		e.Bool(s.IhrDisabled)
+	}
+	{
+		e.FieldStart("bounce")
+		e.Bool(s.Bounce)
+	}
+	{
+		e.FieldStart("bounced")
+		e.Bool(s.Bounced)
+	}
+	{
+		e.FieldStart("value")
+		e.Int64(s.Value)
+	}
+	{
+		e.FieldStart("fwd_fee")
+		e.Int64(s.FwdFee)
+	}
+	{
+		e.FieldStart("ihr_fee")
+		e.Int64(s.IhrFee)
+	}
+	{
+		if s.Destination.Set {
+			e.FieldStart("destination")
+			s.Destination.Encode(e)
+		}
+	}
+	{
+		if s.Source.Set {
+			e.FieldStart("source")
+			s.Source.Encode(e)
+		}
+	}
+	{
+		e.FieldStart("import_fee")
+		e.Int64(s.ImportFee)
+	}
+	{
+		e.FieldStart("created_at")
+		e.Int64(s.CreatedAt)
+	}
+	{
+		if s.OpCode.Set {
+			e.FieldStart("op_code")
+			s.OpCode.Encode(e)
+		}
+	}
+	{
+		if s.Init.Set {
+			e.FieldStart("init")
+			s.Init.Encode(e)
+		}
+	}
+	{
+		e.FieldStart("hash")
+		e.Str(s.Hash)
+	}
+	{
+		if s.RawBody.Set {
+			e.FieldStart("raw_body")
+			s.RawBody.Encode(e)
+		}
+	}
+	{
+		if s.DecodedOpName.Set {
+			e.FieldStart("decoded_op_name")
+			s.DecodedOpName.Encode(e)
+		}
+	}
+	{
+		if len(s.DecodedBody) != 0 {
+			e.FieldStart("decoded_body")
+			e.Raw(s.DecodedBody)
+		}
+	}
+	{
+		if s.JettonTransferInfo.Set {
+			e.FieldStart("jetton_transfer_info")
+			s.JettonTransferInfo.Encode(e)
+		}
+	}
+}
+
+var jsonFieldsNameOfOkxMessage = [19]string{
+	0:  "msg_type",
+	1:  "created_lt",
+	2:  "ihr_disabled",
+	3:  "bounce",
+	4:  "bounced",
+	5:  "value",
+	6:  "fwd_fee",
+	7:  "ihr_fee",
+	8:  "destination",
+	9:  "source",
+	10: "import_fee",
+	11: "created_at",
+	12: "op_code",
+	13: "init",
+	14: "hash",
+	15: "raw_body",
+	16: "decoded_op_name",
+	17: "decoded_body",
+	18: "jetton_transfer_info",
+}
+
+// Decode decodes OkxMessage from json.
+func (s *OkxMessage) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode OkxMessage to nil")
+	}
+	var requiredBitSet [3]uint8
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "msg_type":
+			requiredBitSet[0] |= 1 << 0
+			if err := func() error {
+				if err := s.MsgType.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"msg_type\"")
+			}
+		case "created_lt":
+			requiredBitSet[0] |= 1 << 1
+			if err := func() error {
+				v, err := d.Int64()
+				s.CreatedLt = int64(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"created_lt\"")
+			}
+		case "ihr_disabled":
+			requiredBitSet[0] |= 1 << 2
+			if err := func() error {
+				v, err := d.Bool()
+				s.IhrDisabled = bool(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"ihr_disabled\"")
+			}
+		case "bounce":
+			requiredBitSet[0] |= 1 << 3
+			if err := func() error {
+				v, err := d.Bool()
+				s.Bounce = bool(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"bounce\"")
+			}
+		case "bounced":
+			requiredBitSet[0] |= 1 << 4
+			if err := func() error {
+				v, err := d.Bool()
+				s.Bounced = bool(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"bounced\"")
+			}
+		case "value":
+			requiredBitSet[0] |= 1 << 5
+			if err := func() error {
+				v, err := d.Int64()
+				s.Value = int64(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"value\"")
+			}
+		case "fwd_fee":
+			requiredBitSet[0] |= 1 << 6
+			if err := func() error {
+				v, err := d.Int64()
+				s.FwdFee = int64(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"fwd_fee\"")
+			}
+		case "ihr_fee":
+			requiredBitSet[0] |= 1 << 7
+			if err := func() error {
+				v, err := d.Int64()
+				s.IhrFee = int64(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"ihr_fee\"")
+			}
+		case "destination":
+			if err := func() error {
+				s.Destination.Reset()
+				if err := s.Destination.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"destination\"")
+			}
+		case "source":
+			if err := func() error {
+				s.Source.Reset()
+				if err := s.Source.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"source\"")
+			}
+		case "import_fee":
+			requiredBitSet[1] |= 1 << 2
+			if err := func() error {
+				v, err := d.Int64()
+				s.ImportFee = int64(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"import_fee\"")
+			}
+		case "created_at":
+			requiredBitSet[1] |= 1 << 3
+			if err := func() error {
+				v, err := d.Int64()
+				s.CreatedAt = int64(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"created_at\"")
+			}
+		case "op_code":
+			if err := func() error {
+				s.OpCode.Reset()
+				if err := s.OpCode.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"op_code\"")
+			}
+		case "init":
+			if err := func() error {
+				s.Init.Reset()
+				if err := s.Init.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"init\"")
+			}
+		case "hash":
+			requiredBitSet[1] |= 1 << 6
+			if err := func() error {
+				v, err := d.Str()
+				s.Hash = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"hash\"")
+			}
+		case "raw_body":
+			if err := func() error {
+				s.RawBody.Reset()
+				if err := s.RawBody.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"raw_body\"")
+			}
+		case "decoded_op_name":
+			if err := func() error {
+				s.DecodedOpName.Reset()
+				if err := s.DecodedOpName.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"decoded_op_name\"")
+			}
+		case "decoded_body":
+			if err := func() error {
+				v, err := d.RawAppend(nil)
+				s.DecodedBody = jx.Raw(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"decoded_body\"")
+			}
+		case "jetton_transfer_info":
+			if err := func() error {
+				s.JettonTransferInfo.Reset()
+				if err := s.JettonTransferInfo.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"jetton_transfer_info\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode OkxMessage")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [3]uint8{
+		0b11111111,
+		0b01001100,
+		0b00000000,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfOkxMessage) {
+					name = jsonFieldsNameOfOkxMessage[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *OkxMessage) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OkxMessage) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes OkxMessageMsgType as json.
+func (s OkxMessageMsgType) Encode(e *jx.Encoder) {
+	e.Str(string(s))
+}
+
+// Decode decodes OkxMessageMsgType from json.
+func (s *OkxMessageMsgType) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode OkxMessageMsgType to nil")
+	}
+	v, err := d.StrBytes()
+	if err != nil {
+		return err
+	}
+	// Try to use constant string.
+	switch OkxMessageMsgType(v) {
+	case OkxMessageMsgTypeIntMsg:
+		*s = OkxMessageMsgTypeIntMsg
+	case OkxMessageMsgTypeExtInMsg:
+		*s = OkxMessageMsgTypeExtInMsg
+	case OkxMessageMsgTypeExtOutMsg:
+		*s = OkxMessageMsgTypeExtOutMsg
+	default:
+		*s = OkxMessageMsgType(v)
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OkxMessageMsgType) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OkxMessageMsgType) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *OkxTransaction) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *OkxTransaction) encodeFields(e *jx.Encoder) {
+	{
+		e.FieldStart("hash")
+		e.Str(s.Hash)
+	}
+	{
+		e.FieldStart("lt")
+		e.Int64(s.Lt)
+	}
+	{
+		e.FieldStart("account")
+		s.Account.Encode(e)
+	}
+	{
+		e.FieldStart("success")
+		e.Bool(s.Success)
+	}
+	{
+		e.FieldStart("utime")
+		e.Int64(s.Utime)
+	}
+	{
+		e.FieldStart("orig_status")
+		s.OrigStatus.Encode(e)
+	}
+	{
+		e.FieldStart("end_status")
+		s.EndStatus.Encode(e)
+	}
+	{
+		e.FieldStart("total_fees")
+		e.Int64(s.TotalFees)
+	}
+	{
+		e.FieldStart("end_balance")
+		e.Int64(s.EndBalance)
+	}
+	{
+		e.FieldStart("transaction_type")
+		s.TransactionType.Encode(e)
+	}
+	{
+		e.FieldStart("state_update_old")
+		e.Str(s.StateUpdateOld)
+	}
+	{
+		e.FieldStart("state_update_new")
+		e.Str(s.StateUpdateNew)
+	}
+	{
+		if s.InMsg.Set {
+			e.FieldStart("in_msg")
+			s.InMsg.Encode(e)
+		}
+	}
+	{
+		e.FieldStart("out_msgs")
+		e.ArrStart()
+		for _, elem := range s.OutMsgs {
+			elem.Encode(e)
+		}
+		e.ArrEnd()
+	}
+	{
+		e.FieldStart("block")
+		e.Str(s.Block)
+	}
+	{
+		e.FieldStart("masterchain_block")
+		e.Str(s.MasterchainBlock)
+	}
+	{
+		if s.PrevTransHash.Set {
+			e.FieldStart("prev_trans_hash")
+			s.PrevTransHash.Encode(e)
+		}
+	}
+	{
+		if s.PrevTransLt.Set {
+			e.FieldStart("prev_trans_lt")
+			s.PrevTransLt.Encode(e)
+		}
+	}
+	{
+		if s.ComputePhase.Set {
+			e.FieldStart("compute_phase")
+			s.ComputePhase.Encode(e)
+		}
+	}
+	{
+		if s.StoragePhase.Set {
+			e.FieldStart("storage_phase")
+			s.StoragePhase.Encode(e)
+		}
+	}
+	{
+		if s.CreditPhase.Set {
+			e.FieldStart("credit_phase")
+			s.CreditPhase.Encode(e)
+		}
+	}
+	{
+		if s.ActionPhase.Set {
+			e.FieldStart("action_phase")
+			s.ActionPhase.Encode(e)
+		}
+	}
+	{
+		if s.BouncePhase.Set {
+			e.FieldStart("bounce_phase")
+			s.BouncePhase.Encode(e)
+		}
+	}
+	{
+		e.FieldStart("aborted")
+		e.Bool(s.Aborted)
+	}
+	{
+		e.FieldStart("destroyed")
+		e.Bool(s.Destroyed)
+	}
+	{
+		e.FieldStart("raw")
+		e.Str(s.Raw)
+	}
+}
+
+var jsonFieldsNameOfOkxTransaction = [26]string{
+	0:  "hash",
+	1:  "lt",
+	2:  "account",
+	3:  "success",
+	4:  "utime",
+	5:  "orig_status",
+	6:  "end_status",
+	7:  "total_fees",
+	8:  "end_balance",
+	9:  "transaction_type",
+	10: "state_update_old",
+	11: "state_update_new",
+	12: "in_msg",
+	13: "out_msgs",
+	14: "block",
+	15: "masterchain_block",
+	16: "prev_trans_hash",
+	17: "prev_trans_lt",
+	18: "compute_phase",
+	19: "storage_phase",
+	20: "credit_phase",
+	21: "action_phase",
+	22: "bounce_phase",
+	23: "aborted",
+	24: "destroyed",
+	25: "raw",
+}
+
+// Decode decodes OkxTransaction from json.
+func (s *OkxTransaction) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode OkxTransaction to nil")
+	}
+	var requiredBitSet [4]uint8
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "hash":
+			requiredBitSet[0] |= 1 << 0
+			if err := func() error {
+				v, err := d.Str()
+				s.Hash = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"hash\"")
+			}
+		case "lt":
+			requiredBitSet[0] |= 1 << 1
+			if err := func() error {
+				v, err := d.Int64()
+				s.Lt = int64(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"lt\"")
+			}
+		case "account":
+			requiredBitSet[0] |= 1 << 2
+			if err := func() error {
+				if err := s.Account.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"account\"")
+			}
+		case "success":
+			requiredBitSet[0] |= 1 << 3
+			if err := func() error {
+				v, err := d.Bool()
+				s.Success = bool(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"success\"")
+			}
+		case "utime":
+			requiredBitSet[0] |= 1 << 4
+			if err := func() error {
+				v, err := d.Int64()
+				s.Utime = int64(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"utime\"")
+			}
+		case "orig_status":
+			requiredBitSet[0] |= 1 << 5
+			if err := func() error {
+				if err := s.OrigStatus.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"orig_status\"")
+			}
+		case "end_status":
+			requiredBitSet[0] |= 1 << 6
+			if err := func() error {
+				if err := s.EndStatus.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"end_status\"")
+			}
+		case "total_fees":
+			requiredBitSet[0] |= 1 << 7
+			if err := func() error {
+				v, err := d.Int64()
+				s.TotalFees = int64(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"total_fees\"")
+			}
+		case "end_balance":
+			requiredBitSet[1] |= 1 << 0
+			if err := func() error {
+				v, err := d.Int64()
+				s.EndBalance = int64(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"end_balance\"")
+			}
+		case "transaction_type":
+			requiredBitSet[1] |= 1 << 1
+			if err := func() error {
+				if err := s.TransactionType.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"transaction_type\"")
+			}
+		case "state_update_old":
+			requiredBitSet[1] |= 1 << 2
+			if err := func() error {
+				v, err := d.Str()
+				s.StateUpdateOld = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"state_update_old\"")
+			}
+		case "state_update_new":
+			requiredBitSet[1] |= 1 << 3
+			if err := func() error {
+				v, err := d.Str()
+				s.StateUpdateNew = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"state_update_new\"")
+			}
+		case "in_msg":
+			if err := func() error {
+				s.InMsg.Reset()
+				if err := s.InMsg.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"in_msg\"")
+			}
+		case "out_msgs":
+			requiredBitSet[1] |= 1 << 5
+			if err := func() error {
+				s.OutMsgs = make([]OkxMessage, 0)
+				if err := d.Arr(func(d *jx.Decoder) error {
+					var elem OkxMessage
+					if err := elem.Decode(d); err != nil {
+						return err
+					}
+					s.OutMsgs = append(s.OutMsgs, elem)
+					return nil
+				}); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"out_msgs\"")
+			}
+		case "block":
+			requiredBitSet[1] |= 1 << 6
+			if err := func() error {
+				v, err := d.Str()
+				s.Block = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"block\"")
+			}
+		case "masterchain_block":
+			requiredBitSet[1] |= 1 << 7
+			if err := func() error {
+				v, err := d.Str()
+				s.MasterchainBlock = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"masterchain_block\"")
+			}
+		case "prev_trans_hash":
+			if err := func() error {
+				s.PrevTransHash.Reset()
+				if err := s.PrevTransHash.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"prev_trans_hash\"")
+			}
+		case "prev_trans_lt":
+			if err := func() error {
+				s.PrevTransLt.Reset()
+				if err := s.PrevTransLt.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"prev_trans_lt\"")
+			}
+		case "compute_phase":
+			if err := func() error {
+				s.ComputePhase.Reset()
+				if err := s.ComputePhase.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"compute_phase\"")
+			}
+		case "storage_phase":
+			if err := func() error {
+				s.StoragePhase.Reset()
+				if err := s.StoragePhase.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"storage_phase\"")
+			}
+		case "credit_phase":
+			if err := func() error {
+				s.CreditPhase.Reset()
+				if err := s.CreditPhase.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"credit_phase\"")
+			}
+		case "action_phase":
+			if err := func() error {
+				s.ActionPhase.Reset()
+				if err := s.ActionPhase.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"action_phase\"")
+			}
+		case "bounce_phase":
+			if err := func() error {
+				s.BouncePhase.Reset()
+				if err := s.BouncePhase.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"bounce_phase\"")
+			}
+		case "aborted":
+			requiredBitSet[2] |= 1 << 7
+			if err := func() error {
+				v, err := d.Bool()
+				s.Aborted = bool(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"aborted\"")
+			}
+		case "destroyed":
+			requiredBitSet[3] |= 1 << 0
+			if err := func() error {
+				v, err := d.Bool()
+				s.Destroyed = bool(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"destroyed\"")
+			}
+		case "raw":
+			requiredBitSet[3] |= 1 << 1
+			if err := func() error {
+				v, err := d.Str()
+				s.Raw = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"raw\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode OkxTransaction")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [4]uint8{
+		0b11111111,
+		0b11101111,
+		0b10000000,
+		0b00000011,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfOkxTransaction) {
+					name = jsonFieldsNameOfOkxTransaction[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *OkxTransaction) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OkxTransaction) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *OkxTransactions) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *OkxTransactions) encodeFields(e *jx.Encoder) {
+	{
+		e.FieldStart("transactions")
+		e.ArrStart()
+		for _, elem := range s.Transactions {
+			elem.Encode(e)
+		}
+		e.ArrEnd()
+	}
+}
+
+var jsonFieldsNameOfOkxTransactions = [1]string{
+	0: "transactions",
+}
+
+// Decode decodes OkxTransactions from json.
+func (s *OkxTransactions) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode OkxTransactions to nil")
+	}
+	var requiredBitSet [1]uint8
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "transactions":
+			requiredBitSet[0] |= 1 << 0
+			if err := func() error {
+				s.Transactions = make([]OkxTransaction, 0)
+				if err := d.Arr(func(d *jx.Decoder) error {
+					var elem OkxTransaction
+					if err := elem.Decode(d); err != nil {
+						return err
+					}
+					s.Transactions = append(s.Transactions, elem)
+					return nil
+				}); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"transactions\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode OkxTransactions")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [1]uint8{
+		0b00000001,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfOkxTransactions) {
+					name = jsonFieldsNameOfOkxTransactions[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *OkxTransactions) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OkxTransactions) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
 // Encode encodes AccountAddress as json.
 func (o OptAccountAddress) Encode(e *jx.Encoder) {
 	if !o.Set {
@@ -31344,6 +32585,72 @@ func (s OptNftPurchaseAction) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *OptNftPurchaseAction) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes OkxJettonTransferInfo as json.
+func (o OptOkxJettonTransferInfo) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	o.Value.Encode(e)
+}
+
+// Decode decodes OkxJettonTransferInfo from json.
+func (o *OptOkxJettonTransferInfo) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptOkxJettonTransferInfo to nil")
+	}
+	o.Set = true
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptOkxJettonTransferInfo) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptOkxJettonTransferInfo) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes OkxMessage as json.
+func (o OptOkxMessage) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	o.Value.Encode(e)
+}
+
+// Decode decodes OkxMessage from json.
+func (o *OptOkxMessage) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptOkxMessage to nil")
+	}
+	o.Set = true
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptOkxMessage) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptOkxMessage) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }

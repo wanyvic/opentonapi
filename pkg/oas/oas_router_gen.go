@@ -2658,6 +2658,96 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				}
 
 				elem = origElem
+			case 'o': // Prefix: "okx/blockchain/"
+				origElem := elem
+				if l := len("okx/blockchain/"); len(elem) >= l && elem[0:l] == "okx/blockchain/" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					break
+				}
+				switch elem[0] {
+				case 'b': // Prefix: "blocks/"
+					origElem := elem
+					if l := len("blocks/"); len(elem) >= l && elem[0:l] == "blocks/" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					// Param: "block_id"
+					// Match until "/"
+					idx := strings.IndexByte(elem, '/')
+					if idx < 0 {
+						idx = len(elem)
+					}
+					args[0] = elem[:idx]
+					elem = elem[idx:]
+
+					if len(elem) == 0 {
+						break
+					}
+					switch elem[0] {
+					case '/': // Prefix: "/transactions"
+						origElem := elem
+						if l := len("/transactions"); len(elem) >= l && elem[0:l] == "/transactions" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						if len(elem) == 0 {
+							// Leaf node.
+							switch r.Method {
+							case "GET":
+								s.handleGetOkxEnhancedBlockchainTransactionsRequest([1]string{
+									args[0],
+								}, elemIsEscaped, w, r)
+							default:
+								s.notAllowed(w, r, "GET")
+							}
+
+							return
+						}
+
+						elem = origElem
+					}
+
+					elem = origElem
+				case 't': // Prefix: "transactions/"
+					origElem := elem
+					if l := len("transactions/"); len(elem) >= l && elem[0:l] == "transactions/" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					// Param: "transaction_id"
+					// Leaf parameter
+					args[0] = elem
+					elem = ""
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch r.Method {
+						case "GET":
+							s.handleGetOkxEnhancedBlockchainTransactionRequest([1]string{
+								args[0],
+							}, elemIsEscaped, w, r)
+						default:
+							s.notAllowed(w, r, "GET")
+						}
+
+						return
+					}
+
+					elem = origElem
+				}
+
+				elem = origElem
 			case 'p': // Prefix: "pubkeys/"
 				origElem := elem
 				if l := len("pubkeys/"); len(elem) >= l && elem[0:l] == "pubkeys/" {
@@ -6145,6 +6235,100 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.summary = ""
 							r.operationID = "getNftHistoryByID"
 							r.pathPattern = "/v2/nfts/{account_id}/history"
+							r.args = args
+							r.count = 1
+							return r, true
+						default:
+							return
+						}
+					}
+
+					elem = origElem
+				}
+
+				elem = origElem
+			case 'o': // Prefix: "okx/blockchain/"
+				origElem := elem
+				if l := len("okx/blockchain/"); len(elem) >= l && elem[0:l] == "okx/blockchain/" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					break
+				}
+				switch elem[0] {
+				case 'b': // Prefix: "blocks/"
+					origElem := elem
+					if l := len("blocks/"); len(elem) >= l && elem[0:l] == "blocks/" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					// Param: "block_id"
+					// Match until "/"
+					idx := strings.IndexByte(elem, '/')
+					if idx < 0 {
+						idx = len(elem)
+					}
+					args[0] = elem[:idx]
+					elem = elem[idx:]
+
+					if len(elem) == 0 {
+						break
+					}
+					switch elem[0] {
+					case '/': // Prefix: "/transactions"
+						origElem := elem
+						if l := len("/transactions"); len(elem) >= l && elem[0:l] == "/transactions" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						if len(elem) == 0 {
+							switch method {
+							case "GET":
+								// Leaf: GetOkxEnhancedBlockchainTransactions
+								r.name = "GetOkxEnhancedBlockchainTransactions"
+								r.summary = ""
+								r.operationID = "getOkxEnhancedBlockchainTransactions"
+								r.pathPattern = "/v2/okx/blockchain/blocks/{block_id}/transactions"
+								r.args = args
+								r.count = 1
+								return r, true
+							default:
+								return
+							}
+						}
+
+						elem = origElem
+					}
+
+					elem = origElem
+				case 't': // Prefix: "transactions/"
+					origElem := elem
+					if l := len("transactions/"); len(elem) >= l && elem[0:l] == "transactions/" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					// Param: "transaction_id"
+					// Leaf parameter
+					args[0] = elem
+					elem = ""
+
+					if len(elem) == 0 {
+						switch method {
+						case "GET":
+							// Leaf: GetOkxEnhancedBlockchainTransaction
+							r.name = "GetOkxEnhancedBlockchainTransaction"
+							r.summary = ""
+							r.operationID = "getOkxEnhancedBlockchainTransaction"
+							r.pathPattern = "/v2/okx/blockchain/transactions/{transaction_id}"
 							r.args = args
 							r.count = 1
 							return r, true

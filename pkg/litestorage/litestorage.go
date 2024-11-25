@@ -566,3 +566,11 @@ func (s *LiteStorage) GetAccountMultisigs(ctx context.Context, accountID ton.Acc
 func (s *LiteStorage) GetMultisigByID(ctx context.Context, accountID ton.AccountID) (*core.Multisig, error) {
 	return nil, fmt.Errorf("not implemented")
 }
+
+func (s *LiteStorage) GetOkxEnhancedTransaction(ctx context.Context, hash tongo.Bits256) (*core.EnhancedTransaction, error) {
+	return nil, fmt.Errorf("not implemented")
+}
+
+func (s *LiteStorage) GetOkxEnhancedBlockTransactions(ctx context.Context, id tongo.BlockID) (*core.EnhancedTransactions, error) {
+	return nil, fmt.Errorf("not implemented")
+}
