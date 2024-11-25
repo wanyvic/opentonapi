@@ -112,6 +112,9 @@ type storage interface {
 	SaveTraceWithState(ctx context.Context, msgHash string, trace *core.Trace, version int, getMethods []abi.MethodInvocation, ttl time.Duration) error
 	GetTraceWithState(ctx context.Context, msgHash string) (*core.Trace, int, []abi.MethodInvocation, error)
 
+	// Okx enhanced methods
+	GetOkxEnhancedTransaction(ctx context.Context, hash tongo.Bits256) (*core.EnhancedTransaction, error)
+	GetOkxEnhancedBlockTransactions(ctx context.Context, id tongo.BlockID) (*core.EnhancedTransactions, error)
 	liteStorageRaw
 }
 
