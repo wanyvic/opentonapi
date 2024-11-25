@@ -83,3 +83,22 @@ type NftOperation struct {
 	Lt             uint64
 	Utime          int64
 }
+
+type JettonsAdditionalInfo struct {
+	JettonWallets map[tongo.AccountID]JettonWallet
+}
+
+func (info *JettonsAdditionalInfo) JettonWallet(jettonWallet tongo.AccountID) (JettonWallet, bool) {
+	if info.JettonWallets == nil {
+		return JettonWallet{}, false
+	}
+	value, ok := info.JettonWallets[jettonWallet]
+	return value, ok
+}
+
+func (info *JettonsAdditionalInfo) SetJettonWallet(jettonWallet tongo.AccountID, value JettonWallet) {
+	if info.JettonWallets == nil {
+		info.JettonWallets = make(map[tongo.AccountID]JettonWallet)
+	}
+	info.JettonWallets[jettonWallet] = value
+}

@@ -669,3 +669,11 @@ func findMissedBlocks(ctx context.Context, s *LiteStorage, id ton.BlockID, prev 
 	}
 	return maps.Keys(uniq), nil
 }
+
+func (s *LiteStorage) GetOkxEnhancedTransaction(ctx context.Context, hash tongo.Bits256) (*core.EnhancedTransaction, error) {
+	return nil, fmt.Errorf("not implemented")
+}
+
+func (s *LiteStorage) GetOkxEnhancedBlockTransactions(ctx context.Context, id tongo.BlockID) (*core.EnhancedTransactions, error) {
+	return nil, fmt.Errorf("not implemented")
+}
