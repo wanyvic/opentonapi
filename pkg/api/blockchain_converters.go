@@ -215,6 +215,128 @@ func convertTransaction(t core.Transaction, accountInterfaces []abi.ContractInte
 	return tx
 }
 
+func convertOkxEnhancedTransaction(t core.EnhancedTransaction, accountInterfaces []abi.ContractInterface, book addressBook) oas.OkxTransaction {
+	oasTx := convertTransaction(*t.Transaction, accountInterfaces, book)
+	okxTransaction := oas.OkxTransaction{
+		Hash:             oasTx.Hash,
+		Lt:               oasTx.Lt,
+		Account:          oasTx.Account,
+		Success:          oasTx.Success,
+		Utime:            oasTx.Utime,
+		OrigStatus:       oasTx.OrigStatus,
+		EndStatus:        oasTx.EndStatus,
+		TotalFees:        oasTx.TotalFees,
+		EndBalance:       oasTx.EndBalance,
+		TransactionType:  oasTx.TransactionType,
+		StateUpdateOld:   oasTx.StateUpdateOld,
+		StateUpdateNew:   oasTx.StateUpdateNew,
+		Block:            oasTx.Block,
+		MasterchainBlock: t.MasterChainBlockID.String(),
+		PrevTransHash:    oasTx.PrevTransHash,
+		PrevTransLt:      oasTx.PrevTransLt,
+		ComputePhase:     oasTx.ComputePhase,
+		StoragePhase:     oasTx.StoragePhase,
+		CreditPhase:      oasTx.CreditPhase,
+		ActionPhase:      oasTx.ActionPhase,
+		BouncePhase:      oasTx.BouncePhase,
+		Aborted:          oasTx.Aborted,
+		Destroyed:        oasTx.Destroyed,
+		Raw:              oasTx.Raw,
+	}
+	if t.InMsg != nil {
+		okxTransaction.InMsg.SetTo(convertOkxEnhancedMessage(&oasTx.InMsg.Value, t.InMsg, t.Transaction, t.AdditionalInfo))
+	}
+
+	for i, m := range oasTx.OutMsgs {
+		okxTransaction.OutMsgs = append(okxTransaction.OutMsgs, convertOkxEnhancedMessage(&m, &t.OutMsgs[i], t.Transaction, t.AdditionalInfo))
+	}
+	return okxTransaction
+}
+
+func convertOkxEnhancedMessage(oasMsg *oas.Message, m *core.Message, tx *core.Transaction, informationSource core.JettonsAdditionalInfo) oas.OkxMessage {
+	msg := oas.OkxMessage{
+		MsgType:       oas.OkxMessageMsgType(oasMsg.MsgType),
+		CreatedLt:     oasMsg.CreatedLt,
+		IhrDisabled:   oasMsg.IhrDisabled,
+		Bounce:        oasMsg.Bounce,
+		Bounced:       oasMsg.Bounced,
+		Value:         oasMsg.Value,
+		FwdFee:        oasMsg.FwdFee,
+		IhrFee:        oasMsg.IhrFee,
+		Destination:   oasMsg.Destination,
+		Source:        oasMsg.Source,
+		ImportFee:     oasMsg.ImportFee,
+		CreatedAt:     oasMsg.CreatedAt,
+		OpCode:        oasMsg.OpCode,
+		Init:          oasMsg.Init,
+		Hash:          oasMsg.Hash,
+		RawBody:       oasMsg.RawBody,
+		DecodedOpName: oasMsg.DecodedOpName,
+		DecodedBody:   oasMsg.DecodedBody,
+	}
+
+	if m.DecodedBody != nil {
+		var sender, sendersWallet, recipient, recipientsWallet, jetton tongo.AccountID
+		if m.DecodedBody.Operation == abi.JettonTransferMsgOp && m.Hash == tx.InMsg.Hash {
+			sender = *m.Source
+			sendersWallet = *m.Destination
+			if a, _ := tongo.AccountIDFromTlb(m.DecodedBody.Value.(abi.JettonTransferMsgBody).Destination); a != nil {
+				recipient = *a
+			}
+			if v, ok := informationSource.JettonWallet(sendersWallet); ok {
+				jetton = v.JettonAddress
+			}
+
+			var outMsg *core.Message
+			for _, m := range tx.OutMsgs {
+				if m.DecodedBody != nil && m.DecodedBody.Operation == abi.JettonInternalTransferMsgOp {
+					outMsg = &m
+					break
+				}
+			}
+			if outMsg != nil {
+				recipientsWallet = *outMsg.Destination
+				if v, ok := informationSource.JettonWallet(recipientsWallet); ok {
+					if recipient.IsZero() && v.OwnerAddress != nil {
+						recipient = *v.OwnerAddress
+					}
+					if jetton.IsZero() {
+						jetton = v.JettonAddress
+					}
+				}
+			}
+			msg.JettonTransferInfo.SetTo(oas.OkxJettonTransferInfo{
+				Sender:           sender.ToRaw(),
+				SendersWallet:    sendersWallet.ToRaw(),
+				Recipient:        recipient.ToRaw(),
+				RecipientsWallet: recipientsWallet.ToRaw(),
+				Jetton:           jetton.ToRaw(),
+			})
+		} else if m.DecodedBody.Operation == abi.JettonInternalTransferMsgOp {
+			sendersWallet = *m.Source
+			recipientsWallet = *m.Destination
+
+			if a, _ := tongo.AccountIDFromTlb(m.DecodedBody.Value.(abi.JettonInternalTransferMsgBody).From); a != nil {
+				sender = *a
+			}
+			if v, ok := informationSource.JettonWallet(recipientsWallet); ok {
+				if v.OwnerAddress != nil {
+					recipient = *v.OwnerAddress
+				}
+				jetton = v.JettonAddress
+			}
+			msg.JettonTransferInfo.SetTo(oas.OkxJettonTransferInfo{
+				Sender:           sender.ToRaw(),
+				SendersWallet:    sendersWallet.ToRaw(),
+				Recipient:        recipient.ToRaw(),
+				RecipientsWallet: recipientsWallet.ToRaw(),
+				Jetton:           jetton.ToRaw(),
+			})
+		}
+	}
+	return msg
+}
+
 func convertMsgType(msgType core.MsgType) oas.MessageMsgType {
 	switch msgType {
 	case core.ExtInMsg:
