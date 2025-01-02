@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/tonkeeper/opentonapi/pkg/references"
 	"net/http"
 	"strings"
 
@@ -22,7 +23,12 @@ func jettonPreview(master ton.AccountID, meta NormalizedMetadata, score int32) o
 		Symbol:       meta.Symbol,
 		Verification: oas.JettonVerificationType(meta.Verification),
 		Decimals:     meta.Decimals,
-		Image:        meta.PreviewImage,
+		Image: func(image string) string {
+			if strings.HasPrefix(image, "data:image/") {
+				return references.Placeholder
+			}
+			return image
+		}(meta.Image),
 		Score:        score,
 	}
 	if meta.CustomPayloadApiUri != "" {
