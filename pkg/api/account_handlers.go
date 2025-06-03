@@ -14,9 +14,6 @@ import (
 	"sync"
 	"time"
 
-	"go.uber.org/zap"
-	"golang.org/x/exp/maps"
-
 	"github.com/cespare/xxhash/v2"
 	"github.com/go-faster/jx"
 	"github.com/tonkeeper/opentonapi/internal/g"
@@ -26,10 +23,12 @@ import (
 	"github.com/tonkeeper/tongo"
 	"github.com/tonkeeper/tongo/abi"
 	"github.com/tonkeeper/tongo/boc"
+	"github.com/tonkeeper/tongo/code"
 	"github.com/tonkeeper/tongo/tlb"
 	"github.com/tonkeeper/tongo/ton"
 	"github.com/tonkeeper/tongo/utils"
 	walletTongo "github.com/tonkeeper/tongo/wallet"
+	"go.uber.org/zap"
 )
 
 func (h *Handler) GetBlockchainRawAccount(ctx context.Context, params oas.GetBlockchainRawAccountParams) (*oas.BlockchainRawAccount, error) {
@@ -498,7 +497,7 @@ func (h *Handler) BlockchainAccountInspect(ctx context.Context, params oas.Block
 	if err != nil {
 		return nil, toError(http.StatusInternalServerError, err)
 	}
-	info, err := abi.GetCodeInfo(ctx, rawAccount.Code, h.storage)
+	methods, err := code.ParseContractMethods(rawAccount.Code)
 	if err != nil {
 		return nil, toError(http.StatusInternalServerError, err)
 	}
@@ -528,15 +527,11 @@ func (h *Handler) BlockchainAccountInspect(ctx context.Context, params oas.Block
 	if len(sourceFiles) > 0 {
 		resp.Source = oas.NewOptSource(oas.Source{Files: sourceFiles})
 	}
-	knownMethods := make(map[int64]string)
-	for _, name := range maps.Keys(abi.KnownGetMethodsDecoder) {
-		knownMethods[int64(utils.MethodIdFromName(name))] = name
-	}
-	for _, methodID := range maps.Keys(info.Methods) {
-		if method, ok := knownMethods[methodID]; ok {
+	for _, methodID := range methods {
+		if method, ok := code.Methods[methodID]; ok {
 			resp.Methods = append(resp.Methods, oas.Method{
 				ID:     methodID,
-				Method: method,
+				Method: string(method),
 			})
 		}
 	}
