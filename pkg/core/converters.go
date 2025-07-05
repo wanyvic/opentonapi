@@ -320,7 +320,7 @@ func ConvertMessage(message tlb.Message, txLT uint64, cd *abi.ContractDescriptio
 				Source:      source,
 				Destination: dest,
 			},
-			Hash:        ton.Bits256(message.Hash()),
+			Hash:        ton.Bits256(message.Hash(false)),
 			MsgType:     IntMsg,
 			IhrDisabled: info.IhrDisabled,
 			Bounce:      info.Bounce,
@@ -355,7 +355,7 @@ func ConvertMessage(message tlb.Message, txLT uint64, cd *abi.ContractDescriptio
 				CreatedLt:   0,
 				Destination: dest,
 			},
-			Hash:         ton.Bits256(message.Hash()),
+			Hash:         ton.Bits256(message.Hash(false)),
 			MsgType:      ExtInMsg,
 			SourceExtern: externalAddressFromTlb(info.Src),
 			ImportFee:    importFee.Int64(),
@@ -383,7 +383,7 @@ func ConvertMessage(message tlb.Message, txLT uint64, cd *abi.ContractDescriptio
 				CreatedLt: info.CreatedLt,
 				Source:    source,
 			},
-			Hash:              ton.Bits256(message.Hash()),
+			Hash:              ton.Bits256(message.Hash(false)),
 			MsgType:           ExtOutMsg,
 			DestinationExtern: externalAddressFromTlb(info.Dest),
 			Body:              body,
@@ -477,7 +477,7 @@ func ConvertToAccount(accountId tongo.AccountID, shardAccount tlb.ShardAccount) 
 		LastPaid:        acc.Account.StorageStat.LastPaid,
 		UsedCells:       big.Int(acc.Account.StorageStat.Used.Cells),
 		UsedBits:        big.Int(acc.Account.StorageStat.Used.Bits),
-		UsedPublicCells: big.Int(acc.Account.StorageStat.Used.PublicCells),
+		UsedPublicCells: *big.NewInt(0), // not supported now
 	}
 	if acc.Account.StorageStat.DuePayment.Exists {
 		res.Storage.DuePayment = int64(acc.Account.StorageStat.DuePayment.Value)

@@ -189,8 +189,7 @@ func externalAddressFromTlb(address tlb.MsgAddress) *ExternalAddress {
 	if address.SumType != "AddrExtern" {
 		return nil
 	}
-	external := address.AddrExtern.ExternalAddress
-	return &external
+	return address.AddrExtern
 }
 
 type EnhancedTransaction struct {
