@@ -6,6 +6,7 @@ import (
 	"errors"
 	internalErrors "github.com/tonkeeper/opentonapi/pkg/pusher/errors"
 	"net/http"
+	"time"
 
 	"github.com/ogen-go/ogen/middleware"
 	"github.com/ogen-go/ogen/ogenerrors"
@@ -22,7 +23,9 @@ func ogenLoggingMiddleware(logger *zap.Logger) middleware.Middleware {
 			zap.String("path", req.Raw.URL.Path),
 		)
 		logger.Info("Handling request")
+		start := time.Now()
 		resp, err := next(req)
+		logger = logger.With(zap.Duration("duration", time.Since(start)))
 		if err != nil {
 			if oasError, ok := err.(*oas.ErrorStatusCode); ok && oasError.StatusCode == http.StatusInternalServerError {
 				logger.Error("Fail", zap.Error(err))
